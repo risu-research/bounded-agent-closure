@@ -1,0 +1,16 @@
+{
+  "name": "risu-bounded-agent-closure",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "verify": "node src/cli.mjs"
+  },
+  "dependencies": {
+    "ajv": "8.17.1"
+  }
+}

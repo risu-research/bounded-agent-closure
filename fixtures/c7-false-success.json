@@ -1,0 +1,34 @@
+{
+  "spec_version": "0.3",
+  "profile_id": "RISU_AGENT_CLOSURE_V0",
+  "time_basis": "BUNDLE_MONOTONIC_MS",
+  "root": { "id": "agent-7", "new_business_authority": "BLOCKED", "quiesced_at_ms": 100, "quiescence_evidence_ref": "root-blocked" },
+  "domain_bindings": [
+    { "domain": "AUTHORITY", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null },
+    { "domain": "EXECUTION", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null },
+    { "domain": "COMMITMENT", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null },
+    { "domain": "OPERATIONAL_STATE", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null }
+  ],
+  "sources": [
+    { "id": "inventory", "domains": ["AUTHORITY", "EXECUTION", "COMMITMENT", "OPERATIONAL_STATE"], "stability_contract": { "type": "BOUNDED_LAG", "max_visibility_lag_ms": 0 } }
+  ],
+  "scans": [
+    {
+      "scan_id": "c7-scan-1", "observed_at_ms": 100,
+      "sources": [
+        {
+          "source_id": "inventory", "coverage": "COMPLETE", "attribution_coverage": "COMPLETE", "stability_witness": null, "evidence_refs": ["inventory-scan-1"],
+          "residuals": [
+            {
+              "id": "schedule", "class": "EXECUTION", "disposition": "EXTINGUISH", "presence": "PRESENT", "effect": "ACTIVE", "root_linkage": "LIVE", "settlement": "NOT_APPLICABLE", "successor_id": null, "transfer_acceptance": "NOT_APPLICABLE", "evidence_refs": ["schedule-readback"],
+              "action_report": { "operation": "cancel", "reported": "SUCCESS", "evidence_ref": "cancel-response" }
+            }
+          ],
+          "lineage_edges": [
+            { "from": "$root", "to": "schedule", "type": "DERIVED_FROM", "evidence_ref": "schedule-origin" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,487 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://risu.example/schemas/closure-evidence-v0.3.json",
+  "title": "RISU bounded agent-closure evidence bundle v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spec_version",
+    "profile_id",
+    "time_basis",
+    "root",
+    "domain_bindings",
+    "sources",
+    "scans"
+  ],
+  "properties": {
+    "spec_version": {
+      "const": "0.3"
+    },
+    "profile_id": {
+      "const": "RISU_AGENT_CLOSURE_V0"
+    },
+    "time_basis": {
+      "const": "BUNDLE_MONOTONIC_MS"
+    },
+    "root": {
+      "$ref": "#/$defs/root"
+    },
+    "domain_bindings": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/domainBinding"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "scans": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scan"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "enum": [
+        "AUTHORITY",
+        "EXECUTION",
+        "COMMITMENT",
+        "OPERATIONAL_STATE"
+      ]
+    },
+    "root": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "new_business_authority",
+        "quiesced_at_ms",
+        "quiescence_evidence_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "new_business_authority": {
+          "enum": [
+            "BLOCKED",
+            "ACTIVE",
+            "UNKNOWN"
+          ]
+        },
+        "quiesced_at_ms": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "quiescence_evidence_ref": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "domainBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain",
+        "status",
+        "source_ids",
+        "evidence_ref"
+      ],
+      "properties": {
+        "domain": {
+          "$ref": "#/$defs/domain"
+        },
+        "status": {
+          "enum": [
+            "COVERED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true
+        },
+        "evidence_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "COVERED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_ids": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "NOT_APPLICABLE"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_ids": {
+                "type": "array",
+                "maxItems": 0
+              },
+              "evidence_ref": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "domains",
+        "stability_contract"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "domains": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/domain"
+          }
+        },
+        "stability_contract": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "MONOTONIC_BARRIER"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "max_visibility_lag_ms"
+              ],
+              "properties": {
+                "type": {
+                  "const": "BOUNDED_LAG"
+                },
+                "max_visibility_lag_ms": {
+                  "$ref": "#/$defs/nonNegativeSafeInteger"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "const": "UNBOUNDED"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scan_id",
+        "observed_at_ms",
+        "sources"
+      ],
+      "properties": {
+        "scan_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "observed_at_ms": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceObservation"
+          }
+        }
+      }
+    },
+    "sourceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "coverage",
+        "attribution_coverage",
+        "stability_witness",
+        "evidence_refs",
+        "residuals",
+        "lineage_edges"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "coverage": {
+          "enum": [
+            "COMPLETE",
+            "PARTIAL",
+            "UNAVAILABLE"
+          ]
+        },
+        "attribution_coverage": {
+          "enum": [
+            "COMPLETE",
+            "PARTIAL",
+            "UNAVAILABLE"
+          ]
+        },
+        "stability_witness": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "barrier",
+                "barrier_captured_at_ms",
+                "observed_through",
+                "evidence_ref"
+              ],
+              "properties": {
+                "barrier": {
+                  "$ref": "#/$defs/nonNegativeSafeInteger"
+                },
+                "barrier_captured_at_ms": {
+                  "$ref": "#/$defs/nonNegativeSafeInteger"
+                },
+                "observed_through": {
+                  "$ref": "#/$defs/nonNegativeSafeInteger"
+                },
+                "evidence_ref": {
+                  "$ref": "#/$defs/nonEmptyString"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "residuals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/residual"
+          }
+        },
+        "lineage_edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/lineageEdge"
+          }
+        }
+      }
+    },
+    "residual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "class",
+        "disposition",
+        "presence",
+        "effect",
+        "root_linkage",
+        "settlement",
+        "successor_id",
+        "transfer_acceptance",
+        "evidence_refs"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "class": {
+          "$ref": "#/$defs/domain"
+        },
+        "disposition": {
+          "enum": [
+            "NONE",
+            "EXTINGUISH",
+            "SETTLE",
+            "TRANSFER",
+            "RETAIN"
+          ]
+        },
+        "presence": {
+          "enum": [
+            "PRESENT",
+            "ABSENT",
+            "UNKNOWN"
+          ]
+        },
+        "effect": {
+          "enum": [
+            "ACTIVE",
+            "INERT",
+            "UNKNOWN"
+          ]
+        },
+        "root_linkage": {
+          "enum": [
+            "LIVE",
+            "ENDED",
+            "UNKNOWN"
+          ]
+        },
+        "settlement": {
+          "enum": [
+            "PENDING",
+            "SETTLED",
+            "NOT_APPLICABLE",
+            "UNKNOWN"
+          ]
+        },
+        "successor_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transfer_acceptance": {
+          "enum": [
+            "ACCEPTED",
+            "REJECTED",
+            "NOT_APPLICABLE",
+            "UNKNOWN"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "action_report": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operation",
+            "reported",
+            "evidence_ref"
+          ],
+          "properties": {
+            "operation": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "reported": {
+              "enum": [
+                "SUCCESS",
+                "FAILURE",
+                "UNKNOWN"
+              ]
+            },
+            "evidence_ref": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        }
+      }
+    },
+    "lineageEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "type",
+        "evidence_ref"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "to": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "type": {
+          "const": "DERIVED_FROM"
+        },
+        "evidence_ref": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "nonNegativeSafeInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}

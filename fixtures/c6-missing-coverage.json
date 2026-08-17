@@ -1,0 +1,23 @@
+{
+  "spec_version": "0.3",
+  "profile_id": "RISU_AGENT_CLOSURE_V0",
+  "time_basis": "BUNDLE_MONOTONIC_MS",
+  "root": { "id": "agent-6", "new_business_authority": "BLOCKED", "quiesced_at_ms": 100, "quiescence_evidence_ref": "root-blocked" },
+  "domain_bindings": [
+    { "domain": "AUTHORITY", "status": "COVERED", "source_ids": ["scheduler"], "evidence_ref": null },
+    { "domain": "EXECUTION", "status": "COVERED", "source_ids": ["scheduler"], "evidence_ref": null },
+    { "domain": "COMMITMENT", "status": "COVERED", "source_ids": ["scheduler"], "evidence_ref": null },
+    { "domain": "OPERATIONAL_STATE", "status": "COVERED", "source_ids": ["scheduler"], "evidence_ref": null }
+  ],
+  "sources": [
+    { "id": "scheduler", "domains": ["AUTHORITY", "EXECUTION", "COMMITMENT", "OPERATIONAL_STATE"], "stability_contract": { "type": "BOUNDED_LAG", "max_visibility_lag_ms": 0 } }
+  ],
+  "scans": [
+    {
+      "scan_id": "c6-scan-1", "observed_at_ms": 100,
+      "sources": [
+        { "source_id": "scheduler", "coverage": "UNAVAILABLE", "attribution_coverage": "COMPLETE", "stability_witness": null, "evidence_refs": ["scheduler-unavailable"], "residuals": [], "lineage_edges": [] }
+      ]
+    }
+  ]
+}

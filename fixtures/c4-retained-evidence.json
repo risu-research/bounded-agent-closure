@@ -1,0 +1,43 @@
+{
+  "spec_version": "0.3",
+  "profile_id": "RISU_AGENT_CLOSURE_V0",
+  "time_basis": "BUNDLE_MONOTONIC_MS",
+  "root": { "id": "agent-4", "new_business_authority": "BLOCKED", "quiesced_at_ms": 100, "quiescence_evidence_ref": "root-blocked" },
+  "domain_bindings": [
+    { "domain": "AUTHORITY", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null },
+    { "domain": "EXECUTION", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null },
+    { "domain": "COMMITMENT", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null },
+    { "domain": "OPERATIONAL_STATE", "status": "COVERED", "source_ids": ["inventory"], "evidence_ref": null }
+  ],
+  "sources": [
+    { "id": "inventory", "domains": ["AUTHORITY", "EXECUTION", "COMMITMENT", "OPERATIONAL_STATE"], "stability_contract": { "type": "BOUNDED_LAG", "max_visibility_lag_ms": 0 } }
+  ],
+  "scans": [
+    {
+      "scan_id": "c4-scan-1", "observed_at_ms": 100,
+      "sources": [
+        {
+          "source_id": "inventory", "coverage": "COMPLETE", "attribution_coverage": "COMPLETE", "stability_witness": null, "evidence_refs": ["inventory-scan-1"],
+          "residuals": [
+            { "id": "audit-artifact", "class": "OPERATIONAL_STATE", "disposition": "RETAIN", "presence": "PRESENT", "effect": "INERT", "root_linkage": "ENDED", "settlement": "NOT_APPLICABLE", "successor_id": null, "transfer_acceptance": "NOT_APPLICABLE", "evidence_refs": ["audit-readback-1"] }
+          ],
+          "lineage_edges": [
+            { "from": "$root", "to": "audit-artifact", "type": "DERIVED_FROM", "evidence_ref": "audit-origin" }
+          ]
+        }
+      ]
+    },
+    {
+      "scan_id": "c4-scan-2", "observed_at_ms": 200,
+      "sources": [
+        {
+          "source_id": "inventory", "coverage": "COMPLETE", "attribution_coverage": "COMPLETE", "stability_witness": null, "evidence_refs": ["inventory-scan-2"],
+          "residuals": [
+            { "id": "audit-artifact", "class": "OPERATIONAL_STATE", "disposition": "RETAIN", "presence": "PRESENT", "effect": "INERT", "root_linkage": "ENDED", "settlement": "NOT_APPLICABLE", "successor_id": null, "transfer_acceptance": "NOT_APPLICABLE", "evidence_refs": ["audit-readback-2"] }
+          ],
+          "lineage_edges": []
+        }
+      ]
+    }
+  ]
+}
