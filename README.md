@@ -119,7 +119,7 @@ live system → adapter → evidence bundle → verifier → Inspector / CLI
 
 The adapter is responsible for producing truthful source coverage, attribution, timing, and stability evidence under the declared source contract. The verifier treats those source assertions as an explicit trust boundary rather than re-deriving facts that only the source adapter can establish.
 
-No live-runtime adapter is included in v0.3.0. This keeps the core profile vendor-neutral and makes the trust boundary explicit.
+No live-runtime adapter is included in the v0.3 line. This keeps the core profile vendor-neutral and makes the trust boundary explicit.
 
 ## Determinism and trust boundaries
 
@@ -156,7 +156,7 @@ The Inspector was added after the semantic freeze rather than folded back into i
 
 ## Release scope
 
-v0.3.0 is verifier-first. It observes supplied evidence; it does not cancel jobs, settle commitments, transfer responsibility, or shut agents down.
+The v0.3 line is verifier-first. It observes supplied evidence; it does not cancel jobs, settle commitments, transfer responsibility, or shut agents down.
 
 The next integration step is intentionally small: one real adapter from one live agent/runtime environment into the frozen evidence contract. The verifier and Inspector are already usable anywhere that contract can be produced.
 
