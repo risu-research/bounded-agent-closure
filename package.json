@@ -13,6 +13,6 @@
     "verify": "node src/cli.mjs"
   },
   "dependencies": {
-    "ajv": "8.20.1"
+    "ajv": "8.20.0"
   }
 }
