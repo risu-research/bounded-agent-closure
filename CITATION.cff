@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use Bounded Agent Closure in research or engineering work, please cite it using the metadata below."
+title: "Bounded Agent Closure"
+type: software
+authors:
+  - family-names: "Lee"
+    given-names: "Moon"
+version: 0.3.0
+license: Apache-2.0
+repository-code: "https://github.com/risu-research/bounded-agent-closure"
+abstract: >-
+  A deterministic verifier and local-first Inspector for bounded operational
+  closure of retiring autonomous agents under explicit evidence profiles and
+  source contracts.
+keywords:
+  - autonomous agents
+  - agent lifecycle
+  - operational closure
+  - evidence verification
+  - deterministic verification
+  - provenance
