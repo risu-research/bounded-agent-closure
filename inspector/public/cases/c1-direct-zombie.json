@@ -1,0 +1,297 @@
+{
+  "metadata": {
+    "id": "C1",
+    "file": "c1-direct-zombie.json",
+    "title": "Direct Zombie",
+    "description": "A root-linked scheduled execution remains active.",
+    "concept": "Disabling the root does not terminate a consequence already in motion.",
+    "prominent": false
+  },
+  "provenance": {
+    "tag": "phase1-freeze-v0.3",
+    "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+  },
+  "bundle": {
+    "spec_version": "0.3",
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "time_basis": "BUNDLE_MONOTONIC_MS",
+    "root": {
+      "id": "agent-1",
+      "new_business_authority": "BLOCKED",
+      "quiesced_at_ms": 100,
+      "quiescence_evidence_ref": "root-blocked"
+    },
+    "domain_bindings": [
+      {
+        "domain": "AUTHORITY",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "EXECUTION",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "COMMITMENT",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "OPERATIONAL_STATE",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "inventory",
+        "domains": [
+          "AUTHORITY",
+          "EXECUTION",
+          "COMMITMENT",
+          "OPERATIONAL_STATE"
+        ],
+        "stability_contract": {
+          "type": "BOUNDED_LAG",
+          "max_visibility_lag_ms": 0
+        }
+      }
+    ],
+    "scans": [
+      {
+        "scan_id": "c1-scan-1",
+        "observed_at_ms": 100,
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "scheduled-reorder",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-readback"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "scheduled-reorder",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-created-by-root"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "verdict": "INCOMPLETE",
+    "latest_scan_id": "c1-scan-1",
+    "blockers": [
+      {
+        "code": "RESIDUAL_NONTERMINAL",
+        "path": [
+          "$root",
+          "scheduled-reorder"
+        ],
+        "residual_id": "scheduled-reorder",
+        "source_id": "inventory"
+      }
+    ],
+    "unknowns": [],
+    "passes": [
+      {
+        "scan_id": "c1-scan-1",
+        "closure_cone_nodes": 1,
+        "terminal_qualified": false,
+        "semantic_signature": null
+      }
+    ],
+    "certificate": null
+  },
+  "presentation": {
+    "runner_state": "EVALUATED",
+    "verdict": "INCOMPLETE",
+    "verdict_copy": {
+      "summary": "A known blocker prevents bounded operational closure.",
+      "detail": "The verifier reported one or more closure blockers."
+    },
+    "root": {
+      "id": "agent-1",
+      "authority": "BLOCKED"
+    },
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "latest_scan_id": "c1-scan-1",
+    "closure_cone_nodes": 1,
+    "declared_domain_count": 4,
+    "covered_domain_count": 4,
+    "not_applicable_domain_count": 0,
+    "blockers": [
+      {
+        "code": "RESIDUAL_NONTERMINAL",
+        "explanation": "A reachable residual was classified as nonterminal.",
+        "facts": {
+          "code": "RESIDUAL_NONTERMINAL",
+          "path": [
+            "$root",
+            "scheduled-reorder"
+          ],
+          "residual_id": "scheduled-reorder",
+          "source_id": "inventory"
+        }
+      }
+    ],
+    "unknowns": [],
+    "blocker_paths": [
+      [
+        "$root",
+        "scheduled-reorder"
+      ]
+    ],
+    "scans": [
+      {
+        "index": 0,
+        "scan_id": "c1-scan-1",
+        "observed_at_ms": 100,
+        "pass": {
+          "scan_id": "c1-scan-1",
+          "closure_cone_nodes": 1,
+          "terminal_qualified": false,
+          "semantic_signature": null
+        },
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "scheduled-reorder",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-readback"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "scheduled-reorder",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-created-by-root"
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-1",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-1",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "scheduled-reorder",
+            "label": "scheduled-reorder",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "inventory",
+            "facts": {
+              "id": "scheduled-reorder",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "LIVE",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "schedule-readback"
+              ],
+              "source_id": "inventory"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "scheduled-reorder",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-created-by-root",
+            "source_id": "inventory"
+          }
+        ]
+      }
+    ],
+    "action_reports": [],
+    "reason_action_reports": [],
+    "transfers": [],
+    "certificate": null,
+    "metadata": {
+      "id": "C1",
+      "file": "c1-direct-zombie.json",
+      "title": "Direct Zombie",
+      "description": "A root-linked scheduled execution remains active.",
+      "concept": "Disabling the root does not terminate a consequence already in motion.",
+      "prominent": false
+    },
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+}

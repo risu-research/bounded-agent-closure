@@ -7,6 +7,8 @@
     "node": ">=20"
   },
   "scripts": {
+    "inspector": "node inspector/server.mjs",
+    "inspector:generate": "node inspector/generate-public.mjs",
     "test": "node --test",
     "verify": "node src/cli.mjs"
   },

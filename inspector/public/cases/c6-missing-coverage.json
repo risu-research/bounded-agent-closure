@@ -1,0 +1,200 @@
+{
+  "metadata": {
+    "id": "C6",
+    "file": "c6-missing-coverage.json",
+    "title": "Missing Coverage",
+    "description": "The scheduler source is unavailable.",
+    "concept": "No observed blocker is not the same as established closure.",
+    "prominent": true
+  },
+  "provenance": {
+    "tag": "phase1-freeze-v0.3",
+    "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+  },
+  "bundle": {
+    "spec_version": "0.3",
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "time_basis": "BUNDLE_MONOTONIC_MS",
+    "root": {
+      "id": "agent-6",
+      "new_business_authority": "BLOCKED",
+      "quiesced_at_ms": 100,
+      "quiescence_evidence_ref": "root-blocked"
+    },
+    "domain_bindings": [
+      {
+        "domain": "AUTHORITY",
+        "status": "COVERED",
+        "source_ids": [
+          "scheduler"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "EXECUTION",
+        "status": "COVERED",
+        "source_ids": [
+          "scheduler"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "COMMITMENT",
+        "status": "COVERED",
+        "source_ids": [
+          "scheduler"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "OPERATIONAL_STATE",
+        "status": "COVERED",
+        "source_ids": [
+          "scheduler"
+        ],
+        "evidence_ref": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "scheduler",
+        "domains": [
+          "AUTHORITY",
+          "EXECUTION",
+          "COMMITMENT",
+          "OPERATIONAL_STATE"
+        ],
+        "stability_contract": {
+          "type": "BOUNDED_LAG",
+          "max_visibility_lag_ms": 0
+        }
+      }
+    ],
+    "scans": [
+      {
+        "scan_id": "c6-scan-1",
+        "observed_at_ms": 100,
+        "sources": [
+          {
+            "source_id": "scheduler",
+            "coverage": "UNAVAILABLE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "scheduler-unavailable"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "verdict": "UNKNOWN",
+    "latest_scan_id": "c6-scan-1",
+    "blockers": [],
+    "unknowns": [
+      {
+        "code": "SOURCE_UNAVAILABLE",
+        "source_id": "scheduler"
+      }
+    ],
+    "passes": [
+      {
+        "scan_id": "c6-scan-1",
+        "closure_cone_nodes": 0,
+        "terminal_qualified": false,
+        "semantic_signature": null
+      }
+    ],
+    "certificate": null
+  },
+  "presentation": {
+    "runner_state": "EVALUATED",
+    "verdict": "UNKNOWN",
+    "verdict_copy": {
+      "summary": "Available evidence is insufficient to establish closure.",
+      "detail": "No known blocker establishes failure. Closure is not established either."
+    },
+    "root": {
+      "id": "agent-6",
+      "authority": "BLOCKED"
+    },
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "latest_scan_id": "c6-scan-1",
+    "closure_cone_nodes": 0,
+    "declared_domain_count": 4,
+    "covered_domain_count": 4,
+    "not_applicable_domain_count": 0,
+    "blockers": [],
+    "unknowns": [
+      {
+        "code": "SOURCE_UNAVAILABLE",
+        "explanation": "The source was unavailable for this observation.",
+        "facts": {
+          "code": "SOURCE_UNAVAILABLE",
+          "source_id": "scheduler"
+        }
+      }
+    ],
+    "blocker_paths": [],
+    "scans": [
+      {
+        "index": 0,
+        "scan_id": "c6-scan-1",
+        "observed_at_ms": 100,
+        "pass": {
+          "scan_id": "c6-scan-1",
+          "closure_cone_nodes": 0,
+          "terminal_qualified": false,
+          "semantic_signature": null
+        },
+        "sources": [
+          {
+            "source_id": "scheduler",
+            "coverage": "UNAVAILABLE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "scheduler-unavailable"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-6",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-6",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          }
+        ],
+        "edges": []
+      }
+    ],
+    "action_reports": [],
+    "reason_action_reports": [],
+    "transfers": [],
+    "certificate": null,
+    "metadata": {
+      "id": "C6",
+      "file": "c6-missing-coverage.json",
+      "title": "Missing Coverage",
+      "description": "The scheduler source is unavailable.",
+      "concept": "No observed blocker is not the same as established closure.",
+      "prominent": true
+    },
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+}

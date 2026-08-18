@@ -1,0 +1,430 @@
+{
+  "metadata": {
+    "id": "C4",
+    "file": "c4-retained-evidence.json",
+    "title": "Retained Evidence",
+    "description": "Retained state is present, inert, and no longer linked to the root.",
+    "concept": "Closure does not require deletion of inert retained evidence.",
+    "prominent": false
+  },
+  "provenance": {
+    "tag": "phase1-freeze-v0.3",
+    "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+  },
+  "bundle": {
+    "spec_version": "0.3",
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "time_basis": "BUNDLE_MONOTONIC_MS",
+    "root": {
+      "id": "agent-4",
+      "new_business_authority": "BLOCKED",
+      "quiesced_at_ms": 100,
+      "quiescence_evidence_ref": "root-blocked"
+    },
+    "domain_bindings": [
+      {
+        "domain": "AUTHORITY",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "EXECUTION",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "COMMITMENT",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "OPERATIONAL_STATE",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "inventory",
+        "domains": [
+          "AUTHORITY",
+          "EXECUTION",
+          "COMMITMENT",
+          "OPERATIONAL_STATE"
+        ],
+        "stability_contract": {
+          "type": "BOUNDED_LAG",
+          "max_visibility_lag_ms": 0
+        }
+      }
+    ],
+    "scans": [
+      {
+        "scan_id": "c4-scan-1",
+        "observed_at_ms": 100,
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "audit-artifact",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "RETAIN",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "audit-readback-1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "audit-artifact",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "audit-origin"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scan_id": "c4-scan-2",
+        "observed_at_ms": 200,
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-2"
+            ],
+            "residuals": [
+              {
+                "id": "audit-artifact",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "RETAIN",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "audit-readback-2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          }
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "verdict": "CLOSED",
+    "latest_scan_id": "c4-scan-2",
+    "blockers": [],
+    "unknowns": [],
+    "passes": [
+      {
+        "scan_id": "c4-scan-1",
+        "closure_cone_nodes": 1,
+        "terminal_qualified": true,
+        "semantic_signature": "sha256:7a28e6562c383576b7e094fc87fb8bfeab39efe4ae5958d83a08c15c558f77e1"
+      },
+      {
+        "scan_id": "c4-scan-2",
+        "closure_cone_nodes": 1,
+        "terminal_qualified": true,
+        "semantic_signature": "sha256:7a28e6562c383576b7e094fc87fb8bfeab39efe4ae5958d83a08c15c558f77e1"
+      }
+    ],
+    "certificate": {
+      "claim": "CLOSED within RISU_AGENT_CLOSURE_V0 and the declared source contracts.",
+      "closure_cone_digest": "sha256:7a28e6562c383576b7e094fc87fb8bfeab39efe4ae5958d83a08c15c558f77e1",
+      "closure_cone_nodes": 1,
+      "domain_status": {
+        "AUTHORITY": "COVERED",
+        "COMMITMENT": "COVERED",
+        "EXECUTION": "COVERED",
+        "OPERATIONAL_STATE": "COVERED"
+      },
+      "evidence_bundle_digest": "sha256:592f24c11affa87f41bd082e186a862bd2dd8aa1735f297afa0af33b9cc9318a",
+      "profile_id": "RISU_AGENT_CLOSURE_V0",
+      "root_id": "agent-4",
+      "scope_digest": "sha256:b9a56bda64f99e2cba9d3260c2a281e7e015176713dfdc29d0b04407ee1820eb",
+      "terminal_scan_ids": [
+        "c4-scan-1",
+        "c4-scan-2"
+      ],
+      "unknown_count": 0
+    }
+  },
+  "presentation": {
+    "runner_state": "EVALUATED",
+    "verdict": "CLOSED",
+    "verdict_copy": {
+      "summary": "Closure was established within the declared profile and source contracts.",
+      "detail": "The final two scans were terminal-qualified with the same semantic signature, and no remaining confirmation uncertainty prevented closure."
+    },
+    "root": {
+      "id": "agent-4",
+      "authority": "BLOCKED"
+    },
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "latest_scan_id": "c4-scan-2",
+    "closure_cone_nodes": 1,
+    "declared_domain_count": 4,
+    "covered_domain_count": 4,
+    "not_applicable_domain_count": 0,
+    "blockers": [],
+    "unknowns": [],
+    "blocker_paths": [],
+    "scans": [
+      {
+        "index": 0,
+        "scan_id": "c4-scan-1",
+        "observed_at_ms": 100,
+        "pass": {
+          "scan_id": "c4-scan-1",
+          "closure_cone_nodes": 1,
+          "terminal_qualified": true,
+          "semantic_signature": "sha256:7a28e6562c383576b7e094fc87fb8bfeab39efe4ae5958d83a08c15c558f77e1"
+        },
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "audit-artifact",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "RETAIN",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "audit-readback-1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "audit-artifact",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "audit-origin"
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-4",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-4",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "audit-artifact",
+            "label": "audit-artifact",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "OPERATIONAL_STATE",
+            "source_id": "inventory",
+            "facts": {
+              "id": "audit-artifact",
+              "class": "OPERATIONAL_STATE",
+              "disposition": "RETAIN",
+              "presence": "PRESENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "audit-readback-1"
+              ],
+              "source_id": "inventory"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "audit-artifact",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "audit-origin",
+            "source_id": "inventory"
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "scan_id": "c4-scan-2",
+        "observed_at_ms": 200,
+        "pass": {
+          "scan_id": "c4-scan-2",
+          "closure_cone_nodes": 1,
+          "terminal_qualified": true,
+          "semantic_signature": "sha256:7a28e6562c383576b7e094fc87fb8bfeab39efe4ae5958d83a08c15c558f77e1"
+        },
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-2"
+            ],
+            "residuals": [
+              {
+                "id": "audit-artifact",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "RETAIN",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "audit-readback-2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-4",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-4",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "audit-artifact",
+            "label": "audit-artifact",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "OPERATIONAL_STATE",
+            "source_id": "inventory",
+            "facts": {
+              "id": "audit-artifact",
+              "class": "OPERATIONAL_STATE",
+              "disposition": "RETAIN",
+              "presence": "PRESENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "audit-readback-2"
+              ],
+              "source_id": "inventory"
+            },
+            "changes": []
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "audit-artifact",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "audit-origin",
+            "source_id": "inventory"
+          }
+        ]
+      }
+    ],
+    "action_reports": [],
+    "reason_action_reports": [],
+    "transfers": [],
+    "certificate": {
+      "claim": "CLOSED within RISU_AGENT_CLOSURE_V0 and the declared source contracts.",
+      "closure_cone_digest": "sha256:7a28e6562c383576b7e094fc87fb8bfeab39efe4ae5958d83a08c15c558f77e1",
+      "closure_cone_nodes": 1,
+      "domain_status": {
+        "AUTHORITY": "COVERED",
+        "COMMITMENT": "COVERED",
+        "EXECUTION": "COVERED",
+        "OPERATIONAL_STATE": "COVERED"
+      },
+      "evidence_bundle_digest": "sha256:592f24c11affa87f41bd082e186a862bd2dd8aa1735f297afa0af33b9cc9318a",
+      "profile_id": "RISU_AGENT_CLOSURE_V0",
+      "root_id": "agent-4",
+      "scope_digest": "sha256:b9a56bda64f99e2cba9d3260c2a281e7e015176713dfdc29d0b04407ee1820eb",
+      "terminal_scan_ids": [
+        "c4-scan-1",
+        "c4-scan-2"
+      ],
+      "unknown_count": 0
+    },
+    "metadata": {
+      "id": "C4",
+      "file": "c4-retained-evidence.json",
+      "title": "Retained Evidence",
+      "description": "Retained state is present, inert, and no longer linked to the root.",
+      "concept": "Closure does not require deletion of inert retained evidence.",
+      "prominent": false
+    },
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+}

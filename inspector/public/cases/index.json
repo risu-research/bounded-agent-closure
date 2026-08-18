@@ -1,0 +1,106 @@
+[
+  {
+    "id": "C1",
+    "file": "c1-direct-zombie.json",
+    "title": "Direct Zombie",
+    "description": "A root-linked scheduled execution remains active.",
+    "concept": "Disabling the root does not terminate a consequence already in motion.",
+    "prominent": false,
+    "verdict": "INCOMPLETE",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  },
+  {
+    "id": "C2",
+    "file": "c2-transitive-zombie.json",
+    "title": "Transitive Zombie",
+    "description": "A child delegation created a still-active schedule.",
+    "concept": "Evidence lineage can carry a blocker beyond the root identity boundary.",
+    "prominent": true,
+    "verdict": "INCOMPLETE",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  },
+  {
+    "id": "C3",
+    "file": "c3-pending-commitment.json",
+    "title": "Pending Commitment",
+    "description": "A reachable purchase commitment has not settled.",
+    "concept": "A surviving commitment can prevent bounded operational closure.",
+    "prominent": false,
+    "verdict": "INCOMPLETE",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  },
+  {
+    "id": "C4",
+    "file": "c4-retained-evidence.json",
+    "title": "Retained Evidence",
+    "description": "Retained state is present, inert, and no longer linked to the root.",
+    "concept": "Closure does not require deletion of inert retained evidence.",
+    "prominent": false,
+    "verdict": "CLOSED",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  },
+  {
+    "id": "C5",
+    "file": "c5-successor-transfer.json",
+    "title": "Successor Transfer",
+    "description": "Responsibility is accepted by a successor and the old-root linkage has ended.",
+    "concept": "Closure of the retiring root is distinct from global deletion.",
+    "prominent": true,
+    "verdict": "CLOSED",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  },
+  {
+    "id": "C6",
+    "file": "c6-missing-coverage.json",
+    "title": "Missing Coverage",
+    "description": "The scheduler source is unavailable.",
+    "concept": "No observed blocker is not the same as established closure.",
+    "prominent": true,
+    "verdict": "UNKNOWN",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  },
+  {
+    "id": "C7",
+    "file": "c7-false-success.json",
+    "title": "False Success",
+    "description": "A reported cancellation success conflicts with the observed postcondition.",
+    "concept": "Reported operation success does not override observed state.",
+    "prominent": true,
+    "verdict": "INCOMPLETE",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  },
+  {
+    "id": "C8",
+    "file": "c8-fixed-point-winddown.json",
+    "title": "Fixed-Point Wind-Down",
+    "description": "Four scans expose expansion, terminal qualification, and confirmation.",
+    "concept": "One clean observation is not stable convergence.",
+    "prominent": true,
+    "verdict": "CLOSED",
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+]

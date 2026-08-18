@@ -1,0 +1,449 @@
+{
+  "metadata": {
+    "id": "C5",
+    "file": "c5-successor-transfer.json",
+    "title": "Successor Transfer",
+    "description": "Responsibility is accepted by a successor and the old-root linkage has ended.",
+    "concept": "Closure of the retiring root is distinct from global deletion.",
+    "prominent": true
+  },
+  "provenance": {
+    "tag": "phase1-freeze-v0.3",
+    "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+  },
+  "bundle": {
+    "spec_version": "0.3",
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "time_basis": "BUNDLE_MONOTONIC_MS",
+    "root": {
+      "id": "agent-5",
+      "new_business_authority": "BLOCKED",
+      "quiesced_at_ms": 100,
+      "quiescence_evidence_ref": "root-blocked"
+    },
+    "domain_bindings": [
+      {
+        "domain": "AUTHORITY",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "EXECUTION",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "COMMITMENT",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "OPERATIONAL_STATE",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "inventory",
+        "domains": [
+          "AUTHORITY",
+          "EXECUTION",
+          "COMMITMENT",
+          "OPERATIONAL_STATE"
+        ],
+        "stability_contract": {
+          "type": "BOUNDED_LAG",
+          "max_visibility_lag_ms": 0
+        }
+      }
+    ],
+    "scans": [
+      {
+        "scan_id": "c5-scan-1",
+        "observed_at_ms": 100,
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "customer-case",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "TRANSFER",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": "agent-13",
+                "transfer_acceptance": "ACCEPTED",
+                "evidence_refs": [
+                  "transfer-readback-1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "customer-case",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "case-origin"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "scan_id": "c5-scan-2",
+        "observed_at_ms": 200,
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-2"
+            ],
+            "residuals": [
+              {
+                "id": "customer-case",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "TRANSFER",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": "agent-13",
+                "transfer_acceptance": "ACCEPTED",
+                "evidence_refs": [
+                  "transfer-readback-2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          }
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "verdict": "CLOSED",
+    "latest_scan_id": "c5-scan-2",
+    "blockers": [],
+    "unknowns": [],
+    "passes": [
+      {
+        "scan_id": "c5-scan-1",
+        "closure_cone_nodes": 1,
+        "terminal_qualified": true,
+        "semantic_signature": "sha256:c2cc8f30acab59b976e85e0dea0eacda5effd056118767ced746387dccfd348c"
+      },
+      {
+        "scan_id": "c5-scan-2",
+        "closure_cone_nodes": 1,
+        "terminal_qualified": true,
+        "semantic_signature": "sha256:c2cc8f30acab59b976e85e0dea0eacda5effd056118767ced746387dccfd348c"
+      }
+    ],
+    "certificate": {
+      "claim": "CLOSED within RISU_AGENT_CLOSURE_V0 and the declared source contracts.",
+      "closure_cone_digest": "sha256:c2cc8f30acab59b976e85e0dea0eacda5effd056118767ced746387dccfd348c",
+      "closure_cone_nodes": 1,
+      "domain_status": {
+        "AUTHORITY": "COVERED",
+        "COMMITMENT": "COVERED",
+        "EXECUTION": "COVERED",
+        "OPERATIONAL_STATE": "COVERED"
+      },
+      "evidence_bundle_digest": "sha256:65459cedd51bc92763f621f3110a9a8e08aba4a65c60fdaf5fec170f472e5187",
+      "profile_id": "RISU_AGENT_CLOSURE_V0",
+      "root_id": "agent-5",
+      "scope_digest": "sha256:a5172fdb1f465c92bb3abda488e93ef4ca31809e07afb8193bef1271b88f421a",
+      "terminal_scan_ids": [
+        "c5-scan-1",
+        "c5-scan-2"
+      ],
+      "unknown_count": 0
+    }
+  },
+  "presentation": {
+    "runner_state": "EVALUATED",
+    "verdict": "CLOSED",
+    "verdict_copy": {
+      "summary": "Closure was established within the declared profile and source contracts.",
+      "detail": "The final two scans were terminal-qualified with the same semantic signature, and no remaining confirmation uncertainty prevented closure."
+    },
+    "root": {
+      "id": "agent-5",
+      "authority": "BLOCKED"
+    },
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "latest_scan_id": "c5-scan-2",
+    "closure_cone_nodes": 1,
+    "declared_domain_count": 4,
+    "covered_domain_count": 4,
+    "not_applicable_domain_count": 0,
+    "blockers": [],
+    "unknowns": [],
+    "blocker_paths": [],
+    "scans": [
+      {
+        "index": 0,
+        "scan_id": "c5-scan-1",
+        "observed_at_ms": 100,
+        "pass": {
+          "scan_id": "c5-scan-1",
+          "closure_cone_nodes": 1,
+          "terminal_qualified": true,
+          "semantic_signature": "sha256:c2cc8f30acab59b976e85e0dea0eacda5effd056118767ced746387dccfd348c"
+        },
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "customer-case",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "TRANSFER",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": "agent-13",
+                "transfer_acceptance": "ACCEPTED",
+                "evidence_refs": [
+                  "transfer-readback-1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "customer-case",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "case-origin"
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-5",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-5",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "customer-case",
+            "label": "customer-case",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "OPERATIONAL_STATE",
+            "source_id": "inventory",
+            "facts": {
+              "id": "customer-case",
+              "class": "OPERATIONAL_STATE",
+              "disposition": "TRANSFER",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": "agent-13",
+              "transfer_acceptance": "ACCEPTED",
+              "evidence_refs": [
+                "transfer-readback-1"
+              ],
+              "source_id": "inventory"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "customer-case",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "case-origin",
+            "source_id": "inventory"
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "scan_id": "c5-scan-2",
+        "observed_at_ms": 200,
+        "pass": {
+          "scan_id": "c5-scan-2",
+          "closure_cone_nodes": 1,
+          "terminal_qualified": true,
+          "semantic_signature": "sha256:c2cc8f30acab59b976e85e0dea0eacda5effd056118767ced746387dccfd348c"
+        },
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-2"
+            ],
+            "residuals": [
+              {
+                "id": "customer-case",
+                "class": "OPERATIONAL_STATE",
+                "disposition": "TRANSFER",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": "agent-13",
+                "transfer_acceptance": "ACCEPTED",
+                "evidence_refs": [
+                  "transfer-readback-2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-5",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-5",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "customer-case",
+            "label": "customer-case",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "OPERATIONAL_STATE",
+            "source_id": "inventory",
+            "facts": {
+              "id": "customer-case",
+              "class": "OPERATIONAL_STATE",
+              "disposition": "TRANSFER",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": "agent-13",
+              "transfer_acceptance": "ACCEPTED",
+              "evidence_refs": [
+                "transfer-readback-2"
+              ],
+              "source_id": "inventory"
+            },
+            "changes": []
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "customer-case",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "case-origin",
+            "source_id": "inventory"
+          }
+        ]
+      }
+    ],
+    "action_reports": [],
+    "reason_action_reports": [],
+    "transfers": [
+      {
+        "scan_id": "c5-scan-1",
+        "residual_id": "customer-case",
+        "presence": "PRESENT",
+        "effect": "ACTIVE",
+        "root_linkage": "ENDED",
+        "successor_id": "agent-13",
+        "transfer_acceptance": "ACCEPTED"
+      },
+      {
+        "scan_id": "c5-scan-2",
+        "residual_id": "customer-case",
+        "presence": "PRESENT",
+        "effect": "ACTIVE",
+        "root_linkage": "ENDED",
+        "successor_id": "agent-13",
+        "transfer_acceptance": "ACCEPTED"
+      }
+    ],
+    "certificate": {
+      "claim": "CLOSED within RISU_AGENT_CLOSURE_V0 and the declared source contracts.",
+      "closure_cone_digest": "sha256:c2cc8f30acab59b976e85e0dea0eacda5effd056118767ced746387dccfd348c",
+      "closure_cone_nodes": 1,
+      "domain_status": {
+        "AUTHORITY": "COVERED",
+        "COMMITMENT": "COVERED",
+        "EXECUTION": "COVERED",
+        "OPERATIONAL_STATE": "COVERED"
+      },
+      "evidence_bundle_digest": "sha256:65459cedd51bc92763f621f3110a9a8e08aba4a65c60fdaf5fec170f472e5187",
+      "profile_id": "RISU_AGENT_CLOSURE_V0",
+      "root_id": "agent-5",
+      "scope_digest": "sha256:a5172fdb1f465c92bb3abda488e93ef4ca31809e07afb8193bef1271b88f421a",
+      "terminal_scan_ids": [
+        "c5-scan-1",
+        "c5-scan-2"
+      ],
+      "unknown_count": 0
+    },
+    "metadata": {
+      "id": "C5",
+      "file": "c5-successor-transfer.json",
+      "title": "Successor Transfer",
+      "description": "Responsibility is accepted by a successor and the old-root linkage has ended.",
+      "concept": "Closure of the retiring root is distinct from global deletion.",
+      "prominent": true
+    },
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+}

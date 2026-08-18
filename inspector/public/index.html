@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="A local-first debugger for bounded agent closure evidence."
+    >
+    <title>RISU · Agent Closure Inspector</title>
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="./" aria-label="RISU Agent Closure Inspector home">
+        <span>RISU</span>
+        <strong>Agent Closure Inspector</strong>
+      </a>
+      <p class="privacy-note" id="privacy-note">
+        Static mode · Canonical evidence only
+      </p>
+    </header>
+
+    <main>
+      <section class="intro" id="intro" aria-labelledby="intro-title">
+        <p class="eyebrow">RISU · Agent Closure Inspector</p>
+        <h1 id="intro-title">A disabled agent is not necessarily a closed agent.</h1>
+        <p class="intro-copy">
+          Inspect the surviving consequences and evidence required to establish
+          bounded operational closure.
+        </p>
+        <div class="intro-actions">
+          <button class="button primary" id="open-file" type="button" disabled>
+            Open evidence bundle
+          </button>
+          <a class="button secondary" href="#canonical-cases">
+            Explore a canonical case
+          </a>
+          <input
+            id="file-input"
+            type="file"
+            accept="application/json,.json"
+            hidden
+          >
+        </div>
+        <p class="capability-note" id="capability-note" aria-live="polite"></p>
+      </section>
+
+      <section
+        class="cases"
+        id="canonical-cases"
+        aria-labelledby="cases-title"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Frozen corpus</p>
+            <h2 id="cases-title">Canonical cases</h2>
+          </div>
+          <p>Eight generated evaluations from the frozen Phase-1 verifier.</p>
+        </div>
+        <div class="case-grid" id="case-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="inspector hidden" id="inspector" aria-labelledby="case-title">
+        <div class="inspector-heading">
+          <div>
+            <p class="eyebrow" id="case-kicker">Evidence bundle</p>
+            <h2 id="case-title">Evaluation</h2>
+            <p id="case-description"></p>
+          </div>
+          <button class="text-button" id="choose-another" type="button">
+            Choose another case
+          </button>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Inspector views">
+          <button
+            id="evaluation-tab"
+            class="tab active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="evaluation-view"
+            type="button"
+          >
+            Evaluation
+          </button>
+          <button
+            id="evidence-tab"
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="evidence-view"
+            type="button"
+          >
+            Evidence
+          </button>
+        </div>
+
+        <div id="evaluation-view" role="tabpanel" aria-labelledby="evaluation-tab">
+          <section class="verdict-strip" id="verdict-strip" aria-live="polite"></section>
+
+          <section class="workspace-grid">
+            <article class="panel lineage-panel" aria-labelledby="lineage-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Supplied relationships</p>
+                  <h3 id="lineage-title">Evidence lineage</h3>
+                </div>
+                <p id="history-label" class="history-label"></p>
+              </div>
+              <div id="lineage-graph" class="lineage-graph"></div>
+              <div id="node-detail" class="node-detail" aria-live="polite"></div>
+            </article>
+
+            <article class="panel why-panel" aria-labelledby="why-title">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow">Engine reasons</p>
+                  <h3 id="why-title">Why the final verdict</h3>
+                </div>
+              </div>
+              <div id="why-content"></div>
+            </article>
+          </section>
+
+          <section class="panel timeline-panel" aria-labelledby="timeline-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Observation sequence</p>
+                <h3 id="timeline-title">Scan / convergence timeline</h3>
+              </div>
+              <p>Historical selection does not recompute the final verdict.</p>
+            </div>
+            <div class="timeline" id="timeline"></div>
+          </section>
+
+          <section class="secondary-grid">
+            <details class="panel details-panel" open>
+              <summary>Sources &amp; scope</summary>
+              <div id="sources-content"></div>
+            </details>
+            <details class="panel details-panel">
+              <summary>Scope &amp; trust</summary>
+              <p>
+                Closure is established only within
+                <code>RISU_AGENT_CLOSURE_V0</code> and the declared source
+                contracts.
+              </p>
+              <p>
+                Source completeness and attribution claims are supplied by the
+                evidence producer and are not independently authenticated by
+                the verifier.
+              </p>
+            </details>
+            <details class="panel details-panel" id="certificate-panel">
+              <summary>Closure certificate</summary>
+              <div id="certificate-content"></div>
+            </details>
+          </section>
+        </div>
+
+        <div
+          id="evidence-view"
+          class="hidden"
+          role="tabpanel"
+          aria-labelledby="evidence-tab"
+        >
+          <section class="panel evidence-panel" aria-labelledby="evidence-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Read-only input</p>
+                <h3 id="evidence-title">Evidence received by the engine</h3>
+              </div>
+            </div>
+            <div id="evidence-content"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="error-surface hidden" id="error-surface" aria-live="assertive">
+        <p class="eyebrow">Evaluation stopped</p>
+        <h2>Evidence could not be evaluated</h2>
+        <p>No verdict issued.</p>
+        <div id="error-list"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Frozen engine provenance:
+        <code>phase1-freeze-v0.3</code>
+        ·
+        <code>a46456f028cd3dd1d386111b1faab890a26ae5e9</code>
+      </p>
+    </footer>
+  </body>
+</html>

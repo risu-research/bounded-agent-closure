@@ -1,0 +1,377 @@
+{
+  "metadata": {
+    "id": "C2",
+    "file": "c2-transitive-zombie.json",
+    "title": "Transitive Zombie",
+    "description": "A child delegation created a still-active schedule.",
+    "concept": "Evidence lineage can carry a blocker beyond the root identity boundary.",
+    "prominent": true
+  },
+  "provenance": {
+    "tag": "phase1-freeze-v0.3",
+    "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+  },
+  "bundle": {
+    "spec_version": "0.3",
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "time_basis": "BUNDLE_MONOTONIC_MS",
+    "root": {
+      "id": "agent-2",
+      "new_business_authority": "BLOCKED",
+      "quiesced_at_ms": 100,
+      "quiescence_evidence_ref": "root-blocked"
+    },
+    "domain_bindings": [
+      {
+        "domain": "AUTHORITY",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "EXECUTION",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "COMMITMENT",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "OPERATIONAL_STATE",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "inventory",
+        "domains": [
+          "AUTHORITY",
+          "EXECUTION",
+          "COMMITMENT",
+          "OPERATIONAL_STATE"
+        ],
+        "stability_contract": {
+          "type": "BOUNDED_LAG",
+          "max_visibility_lag_ms": 0
+        }
+      }
+    ],
+    "scans": [
+      {
+        "scan_id": "c2-scan-1",
+        "observed_at_ms": 100,
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "child-delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-ended"
+                ]
+              },
+              {
+                "id": "child-schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-active"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "child-delegation",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "root-created-delegation"
+              },
+              {
+                "from": "child-delegation",
+                "to": "child-schedule",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "delegation-created-schedule"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "verdict": "INCOMPLETE",
+    "latest_scan_id": "c2-scan-1",
+    "blockers": [
+      {
+        "code": "RESIDUAL_NONTERMINAL",
+        "path": [
+          "$root",
+          "child-delegation",
+          "child-schedule"
+        ],
+        "residual_id": "child-schedule",
+        "source_id": "inventory"
+      }
+    ],
+    "unknowns": [],
+    "passes": [
+      {
+        "scan_id": "c2-scan-1",
+        "closure_cone_nodes": 2,
+        "terminal_qualified": false,
+        "semantic_signature": null
+      }
+    ],
+    "certificate": null
+  },
+  "presentation": {
+    "runner_state": "EVALUATED",
+    "verdict": "INCOMPLETE",
+    "verdict_copy": {
+      "summary": "A known blocker prevents bounded operational closure.",
+      "detail": "The verifier reported one or more closure blockers."
+    },
+    "root": {
+      "id": "agent-2",
+      "authority": "BLOCKED"
+    },
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "latest_scan_id": "c2-scan-1",
+    "closure_cone_nodes": 2,
+    "declared_domain_count": 4,
+    "covered_domain_count": 4,
+    "not_applicable_domain_count": 0,
+    "blockers": [
+      {
+        "code": "RESIDUAL_NONTERMINAL",
+        "explanation": "A reachable residual was classified as nonterminal.",
+        "facts": {
+          "code": "RESIDUAL_NONTERMINAL",
+          "path": [
+            "$root",
+            "child-delegation",
+            "child-schedule"
+          ],
+          "residual_id": "child-schedule",
+          "source_id": "inventory"
+        }
+      }
+    ],
+    "unknowns": [],
+    "blocker_paths": [
+      [
+        "$root",
+        "child-delegation",
+        "child-schedule"
+      ]
+    ],
+    "scans": [
+      {
+        "index": 0,
+        "scan_id": "c2-scan-1",
+        "observed_at_ms": 100,
+        "pass": {
+          "scan_id": "c2-scan-1",
+          "closure_cone_nodes": 2,
+          "terminal_qualified": false,
+          "semantic_signature": null
+        },
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "child-delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-ended"
+                ]
+              },
+              {
+                "id": "child-schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-active"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "child-delegation",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "root-created-delegation"
+              },
+              {
+                "from": "child-delegation",
+                "to": "child-schedule",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "delegation-created-schedule"
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-2",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-2",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "child-delegation",
+            "label": "child-delegation",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "AUTHORITY",
+            "source_id": "inventory",
+            "facts": {
+              "id": "child-delegation",
+              "class": "AUTHORITY",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "delegation-ended"
+              ],
+              "source_id": "inventory"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          },
+          {
+            "id": "child-schedule",
+            "label": "child-schedule",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "inventory",
+            "facts": {
+              "id": "child-schedule",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "LIVE",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "schedule-active"
+              ],
+              "source_id": "inventory"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "child-delegation",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "root-created-delegation",
+            "source_id": "inventory"
+          },
+          {
+            "from": "child-delegation",
+            "to": "child-schedule",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "delegation-created-schedule",
+            "source_id": "inventory"
+          }
+        ]
+      }
+    ],
+    "action_reports": [],
+    "reason_action_reports": [],
+    "transfers": [],
+    "certificate": null,
+    "metadata": {
+      "id": "C2",
+      "file": "c2-transitive-zombie.json",
+      "title": "Transitive Zombie",
+      "description": "A child delegation created a still-active schedule.",
+      "concept": "Evidence lineage can carry a blocker beyond the root identity boundary.",
+      "prominent": true
+    },
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+}

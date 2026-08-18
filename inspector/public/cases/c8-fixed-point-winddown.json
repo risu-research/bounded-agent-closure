@@ -1,0 +1,1914 @@
+{
+  "metadata": {
+    "id": "C8",
+    "file": "c8-fixed-point-winddown.json",
+    "title": "Fixed-Point Wind-Down",
+    "description": "Four scans expose expansion, terminal qualification, and confirmation.",
+    "concept": "One clean observation is not stable convergence.",
+    "prominent": true
+  },
+  "provenance": {
+    "tag": "phase1-freeze-v0.3",
+    "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+  },
+  "bundle": {
+    "spec_version": "0.3",
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "time_basis": "BUNDLE_MONOTONIC_MS",
+    "root": {
+      "id": "agent-8",
+      "new_business_authority": "BLOCKED",
+      "quiesced_at_ms": 50,
+      "quiescence_evidence_ref": "root-blocked"
+    },
+    "domain_bindings": [
+      {
+        "domain": "AUTHORITY",
+        "status": "COVERED",
+        "source_ids": [
+          "authority-source"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "EXECUTION",
+        "status": "COVERED",
+        "source_ids": [
+          "execution-source"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "COMMITMENT",
+        "status": "COVERED",
+        "source_ids": [
+          "commitment-source"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "OPERATIONAL_STATE",
+        "status": "COVERED",
+        "source_ids": [
+          "state-source"
+        ],
+        "evidence_ref": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "authority-source",
+        "domains": [
+          "AUTHORITY"
+        ],
+        "stability_contract": {
+          "type": "MONOTONIC_BARRIER"
+        }
+      },
+      {
+        "id": "execution-source",
+        "domains": [
+          "EXECUTION"
+        ],
+        "stability_contract": {
+          "type": "MONOTONIC_BARRIER"
+        }
+      },
+      {
+        "id": "commitment-source",
+        "domains": [
+          "COMMITMENT"
+        ],
+        "stability_contract": {
+          "type": "MONOTONIC_BARRIER"
+        }
+      },
+      {
+        "id": "state-source",
+        "domains": [
+          "OPERATIONAL_STATE"
+        ],
+        "stability_contract": {
+          "type": "MONOTONIC_BARRIER"
+        }
+      }
+    ],
+    "scans": [
+      {
+        "scan_id": "c8-pass-1",
+        "observed_at_ms": 60,
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "authority-barrier-p1"
+            },
+            "evidence_refs": [
+              "authority-p1"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "delegation",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "delegation-origin"
+              }
+            ]
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "execution-barrier-p1"
+            },
+            "evidence_refs": [
+              "execution-p1"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "schedule",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-origin"
+              }
+            ]
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "commitment-barrier-p1"
+            },
+            "evidence_refs": [
+              "commitment-p1"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "PENDING",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "purchase",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "purchase-origin"
+              }
+            ]
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "state-barrier-p1"
+            },
+            "evidence_refs": [
+              "state-p1"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ]
+      },
+      {
+        "scan_id": "c8-pass-2",
+        "observed_at_ms": 70,
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "authority-barrier-p2"
+            },
+            "evidence_refs": [
+              "authority-p2"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "execution-barrier-p2"
+            },
+            "evidence_refs": [
+              "execution-p2"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p2"
+                ]
+              },
+              {
+                "id": "retry-job",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "retry-p2"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "schedule",
+                "to": "retry-job",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-created-retry"
+              }
+            ]
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "commitment-barrier-p2"
+            },
+            "evidence_refs": [
+              "commitment-p2"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "SETTLED",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "state-barrier-p2"
+            },
+            "evidence_refs": [
+              "state-p2"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ]
+      },
+      {
+        "scan_id": "c8-pass-3",
+        "observed_at_ms": 80,
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "authority-barrier-p3"
+            },
+            "evidence_refs": [
+              "authority-p3"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p3"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "execution-barrier-p3"
+            },
+            "evidence_refs": [
+              "execution-p3"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p3"
+                ]
+              },
+              {
+                "id": "retry-job",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "retry-p3"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "commitment-barrier-p3"
+            },
+            "evidence_refs": [
+              "commitment-p3"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "SETTLED",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p3"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "state-barrier-p3"
+            },
+            "evidence_refs": [
+              "state-p3"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ]
+      },
+      {
+        "scan_id": "c8-pass-4",
+        "observed_at_ms": 90,
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "authority-barrier-p4"
+            },
+            "evidence_refs": [
+              "authority-p4"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p4"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "execution-barrier-p4"
+            },
+            "evidence_refs": [
+              "execution-p4"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p4"
+                ]
+              },
+              {
+                "id": "retry-job",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "retry-p4"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "commitment-barrier-p4"
+            },
+            "evidence_refs": [
+              "commitment-p4"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "SETTLED",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p4"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "state-barrier-p4"
+            },
+            "evidence_refs": [
+              "state-p4"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "verdict": "CLOSED",
+    "latest_scan_id": "c8-pass-4",
+    "blockers": [],
+    "unknowns": [],
+    "passes": [
+      {
+        "scan_id": "c8-pass-1",
+        "closure_cone_nodes": 3,
+        "terminal_qualified": false,
+        "semantic_signature": null
+      },
+      {
+        "scan_id": "c8-pass-2",
+        "closure_cone_nodes": 4,
+        "terminal_qualified": false,
+        "semantic_signature": null
+      },
+      {
+        "scan_id": "c8-pass-3",
+        "closure_cone_nodes": 4,
+        "terminal_qualified": true,
+        "semantic_signature": "sha256:4bfa3a186de4f0787a5dc6d437611c10856f62b4a0989b0a9748ff83fbf40036"
+      },
+      {
+        "scan_id": "c8-pass-4",
+        "closure_cone_nodes": 4,
+        "terminal_qualified": true,
+        "semantic_signature": "sha256:4bfa3a186de4f0787a5dc6d437611c10856f62b4a0989b0a9748ff83fbf40036"
+      }
+    ],
+    "certificate": {
+      "claim": "CLOSED within RISU_AGENT_CLOSURE_V0 and the declared source contracts.",
+      "closure_cone_digest": "sha256:4bfa3a186de4f0787a5dc6d437611c10856f62b4a0989b0a9748ff83fbf40036",
+      "closure_cone_nodes": 4,
+      "domain_status": {
+        "AUTHORITY": "COVERED",
+        "COMMITMENT": "COVERED",
+        "EXECUTION": "COVERED",
+        "OPERATIONAL_STATE": "COVERED"
+      },
+      "evidence_bundle_digest": "sha256:a420821d6374995f484c8676ba1915b2a6ed35ee6f7f5d6e3a138fee4a66417a",
+      "profile_id": "RISU_AGENT_CLOSURE_V0",
+      "root_id": "agent-8",
+      "scope_digest": "sha256:9cdc9aa938740646439166e6b1adc798a1214c273b09708d0a2833092cb1faa1",
+      "terminal_scan_ids": [
+        "c8-pass-3",
+        "c8-pass-4"
+      ],
+      "unknown_count": 0
+    }
+  },
+  "presentation": {
+    "runner_state": "EVALUATED",
+    "verdict": "CLOSED",
+    "verdict_copy": {
+      "summary": "Closure was established within the declared profile and source contracts.",
+      "detail": "The final two scans were terminal-qualified with the same semantic signature, and no remaining confirmation uncertainty prevented closure."
+    },
+    "root": {
+      "id": "agent-8",
+      "authority": "BLOCKED"
+    },
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "latest_scan_id": "c8-pass-4",
+    "closure_cone_nodes": 4,
+    "declared_domain_count": 4,
+    "covered_domain_count": 4,
+    "not_applicable_domain_count": 0,
+    "blockers": [],
+    "unknowns": [],
+    "blocker_paths": [],
+    "scans": [
+      {
+        "index": 0,
+        "scan_id": "c8-pass-1",
+        "observed_at_ms": 60,
+        "pass": {
+          "scan_id": "c8-pass-1",
+          "closure_cone_nodes": 3,
+          "terminal_qualified": false,
+          "semantic_signature": null
+        },
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "authority-barrier-p1"
+            },
+            "evidence_refs": [
+              "authority-p1"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "delegation",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "delegation-origin"
+              }
+            ]
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "execution-barrier-p1"
+            },
+            "evidence_refs": [
+              "execution-p1"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "schedule",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-origin"
+              }
+            ]
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "commitment-barrier-p1"
+            },
+            "evidence_refs": [
+              "commitment-p1"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "PENDING",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p1"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "purchase",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "purchase-origin"
+              }
+            ]
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 100,
+              "barrier_captured_at_ms": 55,
+              "observed_through": 80,
+              "evidence_ref": "state-barrier-p1"
+            },
+            "evidence_refs": [
+              "state-p1"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-8",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-8",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 50,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "delegation",
+            "label": "delegation",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "AUTHORITY",
+            "source_id": "authority-source",
+            "facts": {
+              "id": "delegation",
+              "class": "AUTHORITY",
+              "disposition": "EXTINGUISH",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "LIVE",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "delegation-p1"
+              ],
+              "source_id": "authority-source"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          },
+          {
+            "id": "purchase",
+            "label": "purchase",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "COMMITMENT",
+            "source_id": "commitment-source",
+            "facts": {
+              "id": "purchase",
+              "class": "COMMITMENT",
+              "disposition": "SETTLE",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "LIVE",
+              "settlement": "PENDING",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "purchase-p1"
+              ],
+              "source_id": "commitment-source"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          },
+          {
+            "id": "schedule",
+            "label": "schedule",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "execution-source",
+            "facts": {
+              "id": "schedule",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "LIVE",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "schedule-p1"
+              ],
+              "source_id": "execution-source"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "delegation",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "delegation-origin",
+            "source_id": "authority-source"
+          },
+          {
+            "from": "$root",
+            "to": "purchase",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "purchase-origin",
+            "source_id": "commitment-source"
+          },
+          {
+            "from": "$root",
+            "to": "schedule",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-origin",
+            "source_id": "execution-source"
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "scan_id": "c8-pass-2",
+        "observed_at_ms": 70,
+        "pass": {
+          "scan_id": "c8-pass-2",
+          "closure_cone_nodes": 4,
+          "terminal_qualified": false,
+          "semantic_signature": null
+        },
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "authority-barrier-p2"
+            },
+            "evidence_refs": [
+              "authority-p2"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "execution-barrier-p2"
+            },
+            "evidence_refs": [
+              "execution-p2"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p2"
+                ]
+              },
+              {
+                "id": "retry-job",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "retry-p2"
+                ]
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "schedule",
+                "to": "retry-job",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-created-retry"
+              }
+            ]
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "commitment-barrier-p2"
+            },
+            "evidence_refs": [
+              "commitment-p2"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "SETTLED",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p2"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 110,
+              "barrier_captured_at_ms": 65,
+              "observed_through": 110,
+              "evidence_ref": "state-barrier-p2"
+            },
+            "evidence_refs": [
+              "state-p2"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-8",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-8",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 50,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "delegation",
+            "label": "delegation",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "AUTHORITY",
+            "source_id": "authority-source",
+            "facts": {
+              "id": "delegation",
+              "class": "AUTHORITY",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "delegation-p2"
+              ],
+              "source_id": "authority-source"
+            },
+            "changes": [
+              {
+                "field": "presence",
+                "before": "PRESENT",
+                "after": "ABSENT"
+              },
+              {
+                "field": "effect",
+                "before": "ACTIVE",
+                "after": "INERT"
+              },
+              {
+                "field": "root_linkage",
+                "before": "LIVE",
+                "after": "ENDED"
+              }
+            ]
+          },
+          {
+            "id": "purchase",
+            "label": "purchase",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "COMMITMENT",
+            "source_id": "commitment-source",
+            "facts": {
+              "id": "purchase",
+              "class": "COMMITMENT",
+              "disposition": "SETTLE",
+              "presence": "PRESENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "SETTLED",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "purchase-p2"
+              ],
+              "source_id": "commitment-source"
+            },
+            "changes": [
+              {
+                "field": "effect",
+                "before": "ACTIVE",
+                "after": "INERT"
+              },
+              {
+                "field": "root_linkage",
+                "before": "LIVE",
+                "after": "ENDED"
+              },
+              {
+                "field": "settlement",
+                "before": "PENDING",
+                "after": "SETTLED"
+              }
+            ]
+          },
+          {
+            "id": "retry-job",
+            "label": "retry-job",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "execution-source",
+            "facts": {
+              "id": "retry-job",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "LIVE",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "retry-p2"
+              ],
+              "source_id": "execution-source"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          },
+          {
+            "id": "schedule",
+            "label": "schedule",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "execution-source",
+            "facts": {
+              "id": "schedule",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "schedule-p2"
+              ],
+              "source_id": "execution-source"
+            },
+            "changes": [
+              {
+                "field": "presence",
+                "before": "PRESENT",
+                "after": "ABSENT"
+              },
+              {
+                "field": "effect",
+                "before": "ACTIVE",
+                "after": "INERT"
+              },
+              {
+                "field": "root_linkage",
+                "before": "LIVE",
+                "after": "ENDED"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "delegation",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "delegation-origin",
+            "source_id": "authority-source"
+          },
+          {
+            "from": "$root",
+            "to": "purchase",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "purchase-origin",
+            "source_id": "commitment-source"
+          },
+          {
+            "from": "$root",
+            "to": "schedule",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-origin",
+            "source_id": "execution-source"
+          },
+          {
+            "from": "schedule",
+            "to": "retry-job",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-created-retry",
+            "source_id": "execution-source"
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "scan_id": "c8-pass-3",
+        "observed_at_ms": 80,
+        "pass": {
+          "scan_id": "c8-pass-3",
+          "closure_cone_nodes": 4,
+          "terminal_qualified": true,
+          "semantic_signature": "sha256:4bfa3a186de4f0787a5dc6d437611c10856f62b4a0989b0a9748ff83fbf40036"
+        },
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "authority-barrier-p3"
+            },
+            "evidence_refs": [
+              "authority-p3"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p3"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "execution-barrier-p3"
+            },
+            "evidence_refs": [
+              "execution-p3"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p3"
+                ]
+              },
+              {
+                "id": "retry-job",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "retry-p3"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "commitment-barrier-p3"
+            },
+            "evidence_refs": [
+              "commitment-p3"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "SETTLED",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p3"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 120,
+              "barrier_captured_at_ms": 75,
+              "observed_through": 125,
+              "evidence_ref": "state-barrier-p3"
+            },
+            "evidence_refs": [
+              "state-p3"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-8",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-8",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 50,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "delegation",
+            "label": "delegation",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "AUTHORITY",
+            "source_id": "authority-source",
+            "facts": {
+              "id": "delegation",
+              "class": "AUTHORITY",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "delegation-p3"
+              ],
+              "source_id": "authority-source"
+            },
+            "changes": []
+          },
+          {
+            "id": "purchase",
+            "label": "purchase",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "COMMITMENT",
+            "source_id": "commitment-source",
+            "facts": {
+              "id": "purchase",
+              "class": "COMMITMENT",
+              "disposition": "SETTLE",
+              "presence": "PRESENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "SETTLED",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "purchase-p3"
+              ],
+              "source_id": "commitment-source"
+            },
+            "changes": []
+          },
+          {
+            "id": "retry-job",
+            "label": "retry-job",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "execution-source",
+            "facts": {
+              "id": "retry-job",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "retry-p3"
+              ],
+              "source_id": "execution-source"
+            },
+            "changes": [
+              {
+                "field": "presence",
+                "before": "PRESENT",
+                "after": "ABSENT"
+              },
+              {
+                "field": "effect",
+                "before": "ACTIVE",
+                "after": "INERT"
+              },
+              {
+                "field": "root_linkage",
+                "before": "LIVE",
+                "after": "ENDED"
+              }
+            ]
+          },
+          {
+            "id": "schedule",
+            "label": "schedule",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "execution-source",
+            "facts": {
+              "id": "schedule",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "schedule-p3"
+              ],
+              "source_id": "execution-source"
+            },
+            "changes": []
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "delegation",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "delegation-origin",
+            "source_id": "authority-source"
+          },
+          {
+            "from": "$root",
+            "to": "purchase",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "purchase-origin",
+            "source_id": "commitment-source"
+          },
+          {
+            "from": "$root",
+            "to": "schedule",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-origin",
+            "source_id": "execution-source"
+          },
+          {
+            "from": "schedule",
+            "to": "retry-job",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-created-retry",
+            "source_id": "execution-source"
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "scan_id": "c8-pass-4",
+        "observed_at_ms": 90,
+        "pass": {
+          "scan_id": "c8-pass-4",
+          "closure_cone_nodes": 4,
+          "terminal_qualified": true,
+          "semantic_signature": "sha256:4bfa3a186de4f0787a5dc6d437611c10856f62b4a0989b0a9748ff83fbf40036"
+        },
+        "sources": [
+          {
+            "source_id": "authority-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "authority-barrier-p4"
+            },
+            "evidence_refs": [
+              "authority-p4"
+            ],
+            "residuals": [
+              {
+                "id": "delegation",
+                "class": "AUTHORITY",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "delegation-p4"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "execution-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "execution-barrier-p4"
+            },
+            "evidence_refs": [
+              "execution-p4"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-p4"
+                ]
+              },
+              {
+                "id": "retry-job",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "ABSENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "retry-p4"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "commitment-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "commitment-barrier-p4"
+            },
+            "evidence_refs": [
+              "commitment-p4"
+            ],
+            "residuals": [
+              {
+                "id": "purchase",
+                "class": "COMMITMENT",
+                "disposition": "SETTLE",
+                "presence": "PRESENT",
+                "effect": "INERT",
+                "root_linkage": "ENDED",
+                "settlement": "SETTLED",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "purchase-p4"
+                ]
+              }
+            ],
+            "lineage_edges": []
+          },
+          {
+            "source_id": "state-source",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": {
+              "barrier": 130,
+              "barrier_captured_at_ms": 85,
+              "observed_through": 135,
+              "evidence_ref": "state-barrier-p4"
+            },
+            "evidence_refs": [
+              "state-p4"
+            ],
+            "residuals": [],
+            "lineage_edges": []
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-8",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-8",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 50,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "delegation",
+            "label": "delegation",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "AUTHORITY",
+            "source_id": "authority-source",
+            "facts": {
+              "id": "delegation",
+              "class": "AUTHORITY",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "delegation-p4"
+              ],
+              "source_id": "authority-source"
+            },
+            "changes": []
+          },
+          {
+            "id": "purchase",
+            "label": "purchase",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "COMMITMENT",
+            "source_id": "commitment-source",
+            "facts": {
+              "id": "purchase",
+              "class": "COMMITMENT",
+              "disposition": "SETTLE",
+              "presence": "PRESENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "SETTLED",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "purchase-p4"
+              ],
+              "source_id": "commitment-source"
+            },
+            "changes": []
+          },
+          {
+            "id": "retry-job",
+            "label": "retry-job",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "execution-source",
+            "facts": {
+              "id": "retry-job",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "retry-p4"
+              ],
+              "source_id": "execution-source"
+            },
+            "changes": []
+          },
+          {
+            "id": "schedule",
+            "label": "schedule",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "execution-source",
+            "facts": {
+              "id": "schedule",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "ABSENT",
+              "effect": "INERT",
+              "root_linkage": "ENDED",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "schedule-p4"
+              ],
+              "source_id": "execution-source"
+            },
+            "changes": []
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "delegation",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "delegation-origin",
+            "source_id": "authority-source"
+          },
+          {
+            "from": "$root",
+            "to": "purchase",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "purchase-origin",
+            "source_id": "commitment-source"
+          },
+          {
+            "from": "$root",
+            "to": "schedule",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-origin",
+            "source_id": "execution-source"
+          },
+          {
+            "from": "schedule",
+            "to": "retry-job",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-created-retry",
+            "source_id": "execution-source"
+          }
+        ]
+      }
+    ],
+    "action_reports": [],
+    "reason_action_reports": [],
+    "transfers": [],
+    "certificate": {
+      "claim": "CLOSED within RISU_AGENT_CLOSURE_V0 and the declared source contracts.",
+      "closure_cone_digest": "sha256:4bfa3a186de4f0787a5dc6d437611c10856f62b4a0989b0a9748ff83fbf40036",
+      "closure_cone_nodes": 4,
+      "domain_status": {
+        "AUTHORITY": "COVERED",
+        "COMMITMENT": "COVERED",
+        "EXECUTION": "COVERED",
+        "OPERATIONAL_STATE": "COVERED"
+      },
+      "evidence_bundle_digest": "sha256:a420821d6374995f484c8676ba1915b2a6ed35ee6f7f5d6e3a138fee4a66417a",
+      "profile_id": "RISU_AGENT_CLOSURE_V0",
+      "root_id": "agent-8",
+      "scope_digest": "sha256:9cdc9aa938740646439166e6b1adc798a1214c273b09708d0a2833092cb1faa1",
+      "terminal_scan_ids": [
+        "c8-pass-3",
+        "c8-pass-4"
+      ],
+      "unknown_count": 0
+    },
+    "metadata": {
+      "id": "C8",
+      "file": "c8-fixed-point-winddown.json",
+      "title": "Fixed-Point Wind-Down",
+      "description": "Four scans expose expansion, terminal qualification, and confirmation.",
+      "concept": "One clean observation is not stable convergence.",
+      "prominent": true
+    },
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "metadata": {
+    "id": "C7",
+    "file": "c7-false-success.json",
+    "title": "False Success",
+    "description": "A reported cancellation success conflicts with the observed postcondition.",
+    "concept": "Reported operation success does not override observed state.",
+    "prominent": true
+  },
+  "provenance": {
+    "tag": "phase1-freeze-v0.3",
+    "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+  },
+  "bundle": {
+    "spec_version": "0.3",
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "time_basis": "BUNDLE_MONOTONIC_MS",
+    "root": {
+      "id": "agent-7",
+      "new_business_authority": "BLOCKED",
+      "quiesced_at_ms": 100,
+      "quiescence_evidence_ref": "root-blocked"
+    },
+    "domain_bindings": [
+      {
+        "domain": "AUTHORITY",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "EXECUTION",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "COMMITMENT",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      },
+      {
+        "domain": "OPERATIONAL_STATE",
+        "status": "COVERED",
+        "source_ids": [
+          "inventory"
+        ],
+        "evidence_ref": null
+      }
+    ],
+    "sources": [
+      {
+        "id": "inventory",
+        "domains": [
+          "AUTHORITY",
+          "EXECUTION",
+          "COMMITMENT",
+          "OPERATIONAL_STATE"
+        ],
+        "stability_contract": {
+          "type": "BOUNDED_LAG",
+          "max_visibility_lag_ms": 0
+        }
+      }
+    ],
+    "scans": [
+      {
+        "scan_id": "c7-scan-1",
+        "observed_at_ms": 100,
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-readback"
+                ],
+                "action_report": {
+                  "operation": "cancel",
+                  "reported": "SUCCESS",
+                  "evidence_ref": "cancel-response"
+                }
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "schedule",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-origin"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "verdict": "INCOMPLETE",
+    "latest_scan_id": "c7-scan-1",
+    "blockers": [
+      {
+        "code": "RESIDUAL_NONTERMINAL",
+        "path": [
+          "$root",
+          "schedule"
+        ],
+        "residual_id": "schedule",
+        "source_id": "inventory"
+      }
+    ],
+    "unknowns": [],
+    "passes": [
+      {
+        "scan_id": "c7-scan-1",
+        "closure_cone_nodes": 1,
+        "terminal_qualified": false,
+        "semantic_signature": null
+      }
+    ],
+    "certificate": null
+  },
+  "presentation": {
+    "runner_state": "EVALUATED",
+    "verdict": "INCOMPLETE",
+    "verdict_copy": {
+      "summary": "A known blocker prevents bounded operational closure.",
+      "detail": "The verifier reported one or more closure blockers."
+    },
+    "root": {
+      "id": "agent-7",
+      "authority": "BLOCKED"
+    },
+    "profile_id": "RISU_AGENT_CLOSURE_V0",
+    "latest_scan_id": "c7-scan-1",
+    "closure_cone_nodes": 1,
+    "declared_domain_count": 4,
+    "covered_domain_count": 4,
+    "not_applicable_domain_count": 0,
+    "blockers": [
+      {
+        "code": "RESIDUAL_NONTERMINAL",
+        "explanation": "A reachable residual was classified as nonterminal.",
+        "facts": {
+          "code": "RESIDUAL_NONTERMINAL",
+          "path": [
+            "$root",
+            "schedule"
+          ],
+          "residual_id": "schedule",
+          "source_id": "inventory"
+        }
+      }
+    ],
+    "unknowns": [],
+    "blocker_paths": [
+      [
+        "$root",
+        "schedule"
+      ]
+    ],
+    "scans": [
+      {
+        "index": 0,
+        "scan_id": "c7-scan-1",
+        "observed_at_ms": 100,
+        "pass": {
+          "scan_id": "c7-scan-1",
+          "closure_cone_nodes": 1,
+          "terminal_qualified": false,
+          "semantic_signature": null
+        },
+        "sources": [
+          {
+            "source_id": "inventory",
+            "coverage": "COMPLETE",
+            "attribution_coverage": "COMPLETE",
+            "stability_witness": null,
+            "evidence_refs": [
+              "inventory-scan-1"
+            ],
+            "residuals": [
+              {
+                "id": "schedule",
+                "class": "EXECUTION",
+                "disposition": "EXTINGUISH",
+                "presence": "PRESENT",
+                "effect": "ACTIVE",
+                "root_linkage": "LIVE",
+                "settlement": "NOT_APPLICABLE",
+                "successor_id": null,
+                "transfer_acceptance": "NOT_APPLICABLE",
+                "evidence_refs": [
+                  "schedule-readback"
+                ],
+                "action_report": {
+                  "operation": "cancel",
+                  "reported": "SUCCESS",
+                  "evidence_ref": "cancel-response"
+                }
+              }
+            ],
+            "lineage_edges": [
+              {
+                "from": "$root",
+                "to": "schedule",
+                "type": "DERIVED_FROM",
+                "evidence_ref": "schedule-origin"
+              }
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": "$root",
+            "label": "agent-7",
+            "kind": "ROOT",
+            "observed": true,
+            "facts": {
+              "id": "agent-7",
+              "new_business_authority": "BLOCKED",
+              "quiesced_at_ms": 100,
+              "quiescence_evidence_ref": "root-blocked"
+            }
+          },
+          {
+            "id": "schedule",
+            "label": "schedule",
+            "kind": "RESIDUAL",
+            "observed": true,
+            "class": "EXECUTION",
+            "source_id": "inventory",
+            "facts": {
+              "id": "schedule",
+              "class": "EXECUTION",
+              "disposition": "EXTINGUISH",
+              "presence": "PRESENT",
+              "effect": "ACTIVE",
+              "root_linkage": "LIVE",
+              "settlement": "NOT_APPLICABLE",
+              "successor_id": null,
+              "transfer_acceptance": "NOT_APPLICABLE",
+              "evidence_refs": [
+                "schedule-readback"
+              ],
+              "action_report": {
+                "operation": "cancel",
+                "reported": "SUCCESS",
+                "evidence_ref": "cancel-response"
+              },
+              "source_id": "inventory"
+            },
+            "changes": [
+              {
+                "field": "observation",
+                "before": null,
+                "after": "FIRST_OBSERVED"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "$root",
+            "to": "schedule",
+            "type": "DERIVED_FROM",
+            "evidence_ref": "schedule-origin",
+            "source_id": "inventory"
+          }
+        ]
+      }
+    ],
+    "action_reports": [
+      {
+        "scan_id": "c7-scan-1",
+        "residual_id": "schedule",
+        "reported_operation": {
+          "operation": "cancel",
+          "reported": "SUCCESS",
+          "evidence_ref": "cancel-response"
+        },
+        "observed_state": {
+          "presence": "PRESENT",
+          "effect": "ACTIVE",
+          "root_linkage": "LIVE"
+        }
+      }
+    ],
+    "reason_action_reports": [
+      {
+        "scan_id": "c7-scan-1",
+        "residual_id": "schedule",
+        "source_id": "inventory",
+        "reported_operation": {
+          "operation": "cancel",
+          "reported": "SUCCESS",
+          "evidence_ref": "cancel-response"
+        },
+        "observed_state": {
+          "presence": "PRESENT",
+          "effect": "ACTIVE",
+          "root_linkage": "LIVE"
+        }
+      }
+    ],
+    "transfers": [],
+    "certificate": null,
+    "metadata": {
+      "id": "C7",
+      "file": "c7-false-success.json",
+      "title": "False Success",
+      "description": "A reported cancellation success conflicts with the observed postcondition.",
+      "concept": "Reported operation success does not override observed state.",
+      "prominent": true
+    },
+    "provenance": {
+      "tag": "phase1-freeze-v0.3",
+      "commit": "a46456f028cd3dd1d386111b1faab890a26ae5e9"
+    }
+  }
+}
