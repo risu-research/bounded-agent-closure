@@ -6,6 +6,8 @@ authors:
   - family-names: "Lee"
     given-names: "Moon"
 version: 0.3.1
+date-released: "2026-08-18"
+doi: "10.5281/zenodo.22005419"
 license: Apache-2.0
 repository-code: "https://github.com/risu-research/bounded-agent-closure"
 abstract: >-

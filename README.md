@@ -1,6 +1,10 @@
 # Bounded Agent Closure
 
+[![Software DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22005419.svg)](https://doi.org/10.5281/zenodo.22005419)
+
 **A disabled agent is not necessarily a closed agent.**
+
+Technical Note: [From Revocation to Closure: Verifying Attributable Consequences in AI Agent Decommissioning](https://doi.org/10.5281/zenodo.22005109)
 
 Bounded Agent Closure is a deterministic verifier for the operational wind-down of an autonomous agent. It asks a narrow question: after new-business authority has been blocked, have the consequences attributable to that retiring root actually reached a terminal, stable state within an explicitly declared evidence profile?
 
@@ -168,4 +172,12 @@ Licensed under the [Apache License 2.0](LICENSE).
 
 ## Citation
 
-Machine-readable citation metadata is available in [`CITATION.cff`](CITATION.cff).
+If you use the BAC implementation or software artifact, cite:
+
+> Moon Lee, *Bounded Agent Closure*, version 0.3.1, RISU Institute, 2026. https://doi.org/10.5281/zenodo.22005419
+
+For the closure model, verification predicate, and technical discussion, cite:
+
+> Moon Lee, “From Revocation to Closure: Verifying Attributable Consequences in AI Agent Decommissioning,” *RISU Technical Note 2026-01*, RISU Institute, 2026. https://doi.org/10.5281/zenodo.22005109
+
+Machine-readable software citation metadata is available in [`CITATION.cff`](CITATION.cff).
