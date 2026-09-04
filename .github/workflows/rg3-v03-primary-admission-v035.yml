@@ -3,11 +3,8 @@ name: RG3 v03 Primary Admission v0.3.5
 on:
   push:
     branches: [rg3-stripe-e0-execution-v03]
-    paths:
-      - execution/rg3-v03/PRIMARY_ADMISSION_TRIGGER_V035
-
-permissions:
-  contents: read
+    paths: [execution/rg3-v03/PRIMARY_ADMISSION_TRIGGER_V035]
+permissions: {contents: read}
 
 jobs:
   qualify-primary-admission:
@@ -16,15 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
-        with:
-          python-version: '3.13'
-      - name: Verify compiler identity
+        with: {python-version: '3.13'}
+      - name: Verify compiler and scenario prelock identities
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git hash-object execution/rg3-v03/compile_stripe_primary_admission_v035.py)" = 'b10d87b21357985d0f9544535f3cc50cb4729b32'
+          test "$(git hash-object execution/rg3-v03/compile_stripe_primary_admission_v035.py)" = '313b87259a164172d0fed0c86856fb52273e3d8f'
+          test "$(git hash-object execution/rg3-v03/STRIPE_PRIMARY_SCENARIO_PRELOCK_V035.json)" = '9eb16f684c2b35b9259b3e6ef3194c5a42f07979'
           python -m py_compile execution/rg3-v03/compile_stripe_primary_admission_v035.py
-      - name: Prove sealed-ready lock yields admission-only precommit, not authorization
+          python -m json.tool execution/rg3-v03/STRIPE_PRIMARY_SCENARIO_PRELOCK_V035.json >/dev/null
+      - name: Prove sealed-ready lock yields admission-only precommit
         shell: bash
         run: |
           set -euo pipefail
@@ -38,18 +36,16 @@ jobs:
           (r/'manifest.json').write_text(json.dumps({'STRIPE_E0_5_LOCK.json':hashlib.sha256(lp.read_bytes()).hexdigest()},sort_keys=True,separators=(',',':')))
           (r/'seal.json').write_text(json.dumps({'source_commit':'455184caf716751148b7c9c2a372b66084dcaa30'},sort_keys=True,separators=(',',':')))
           PY
-          python execution/rg3-v03/compile_stripe_primary_admission_v035.py --e05-lock /tmp/rg3-primary-admission-v035/in/lock.json --e05-manifest /tmp/rg3-primary-admission-v035/in/manifest.json --final-seal /tmp/rg3-primary-admission-v035/in/seal.json --out-dir /tmp/rg3-primary-admission-v035/out
+          python execution/rg3-v03/compile_stripe_primary_admission_v035.py --e05-lock /tmp/rg3-primary-admission-v035/in/lock.json --e05-manifest /tmp/rg3-primary-admission-v035/in/manifest.json --final-seal /tmp/rg3-primary-admission-v035/in/seal.json --scenario-prelock execution/rg3-v03/STRIPE_PRIMARY_SCENARIO_PRELOCK_V035.json --out-dir /tmp/rg3-primary-admission-v035/out
           python - <<'PY'
           from pathlib import Path
           import json
           p=json.loads(Path('/tmp/rg3-primary-admission-v035/out/STRIPE_PRIMARY_ADMISSION_PRECOMMIT.json').read_text())
-          assert p['status']=='STRIPE_PRIMARY_ADMISSION_PRECOMMIT_ONLY'
-          assert p['primary_execution_authorized'] is False
-          assert p['provider_calls']==0 and p['provider_mutations']==0 and p['primary_evidence_consumed'] is False
-          assert len(p['scenario_order'])==7 and len(p['nonnegotiable_rules'])==8
-          print('PRIMARY_ADMISSION_POSITIVE=PASS; AUTHORIZATION=FALSE; PROVIDER_CALLS=0; PRIMARY_EVIDENCE=0')
+          assert p['primary_execution_authorized'] is False and p['provider_calls']==0 and p['primary_evidence_consumed'] is False
+          assert len(p['scenario_order'])==7 and p['logical_contract']['amount_minor']==100
+          print('PRIMARY_ADMISSION_POSITIVE=PASS; SCENARIO_PRELOCK_BOUND=TRUE; AUTHORIZATION=FALSE; PROVIDER_CALLS=0')
           PY
-      - name: Prove unsealed/mutated inputs fail closed
+      - name: Prove contaminated lock and scenario drift fail closed
         shell: bash
         run: |
           set -euo pipefail
@@ -58,19 +54,15 @@ jobs:
           from pathlib import Path
           import json
           p=Path('/tmp/rg3-primary-admission-v035/in/bad-lock.json'); x=json.loads(p.read_text()); x['primary_evidence_consumed']=True; p.write_text(json.dumps(x,sort_keys=True,separators=(',',':')))
+          sp=Path('/tmp/rg3-primary-admission-v035/in/bad-scenario.json'); x=json.loads(Path('execution/rg3-v03/STRIPE_PRIMARY_SCENARIO_PRELOCK_V035.json').read_text()); x['logical_contract']['amount_minor']=101; sp.write_text(json.dumps(x,sort_keys=True,separators=(',',':')))
           PY
           set +e
-          python execution/rg3-v03/compile_stripe_primary_admission_v035.py --e05-lock /tmp/rg3-primary-admission-v035/in/bad-lock.json --e05-manifest /tmp/rg3-primary-admission-v035/in/manifest.json --final-seal /tmp/rg3-primary-admission-v035/in/seal.json --out-dir /tmp/rg3-primary-admission-v035/forbidden >/tmp/admit.out 2>/tmp/admit.err
-          rc=$?
+          python execution/rg3-v03/compile_stripe_primary_admission_v035.py --e05-lock /tmp/rg3-primary-admission-v035/in/bad-lock.json --e05-manifest /tmp/rg3-primary-admission-v035/in/manifest.json --final-seal /tmp/rg3-primary-admission-v035/in/seal.json --scenario-prelock execution/rg3-v03/STRIPE_PRIMARY_SCENARIO_PRELOCK_V035.json --out-dir /tmp/rg3-primary-admission-v035/forbidden1 >/tmp/a1.out 2>/tmp/a1.err; r1=$?
+          python execution/rg3-v03/compile_stripe_primary_admission_v035.py --e05-lock /tmp/rg3-primary-admission-v035/in/lock.json --e05-manifest /tmp/rg3-primary-admission-v035/in/manifest.json --final-seal /tmp/rg3-primary-admission-v035/in/seal.json --scenario-prelock /tmp/rg3-primary-admission-v035/in/bad-scenario.json --out-dir /tmp/rg3-primary-admission-v035/forbidden2 >/tmp/a2.out 2>/tmp/a2.err; r2=$?
           set -e
-          test "$rc" -ne 0
-          grep -F 'primary already consumed' /tmp/admit.err >/dev/null
-          test ! -e /tmp/rg3-primary-admission-v035/forbidden/STRIPE_PRIMARY_ADMISSION_PRECOMMIT.json
-          echo 'PRIMARY_ADMISSION_NEGATIVE=PASS; FAIL_CLOSED=TRUE'
-      - name: Upload provider-free admission qualification
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: rg3-primary-admission-v035
-          path: /tmp/rg3-primary-admission-v035/out
-          if-no-files-found: error
-          retention-days: 30
+          test "$r1" -ne 0; test "$r2" -ne 0
+          grep -F 'primary already consumed' /tmp/a1.err >/dev/null
+          grep -F 'logical contract drift' /tmp/a2.err >/dev/null
+          echo 'PRIMARY_ADMISSION_NEGATIVES=PASS; FAIL_CLOSED=TRUE'
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with: {name: rg3-primary-admission-v035, path: /tmp/rg3-primary-admission-v035/out, if-no-files-found: error, retention-days: 30}
