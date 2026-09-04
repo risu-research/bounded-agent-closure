@@ -22,7 +22,7 @@ jobs:
           python-version: '3.13'
       - name: Fail-closed gate validation
         run: python execution/category-kill-gate-v01/validate_gate.py
-      - name: Generate blind arm package and separate reveal map
+      - name: Generate blind case payload and separate reveal map
         shell: bash
         run: |
           set -euo pipefail
@@ -40,16 +40,21 @@ jobs:
           from pathlib import Path
           import json,sys
           x=json.loads(Path(sys.argv[1]).read_text())
+          assert x['package']=='BLIND_CASE_PAYLOAD_V0_1'
           assert len(x['cases'])==8
           forbidden_keys={'locked_oracle','reason','expected_obligation_families','domain','original_case_id'}
           for case in x['cases']:
               assert not (set(case) & forbidden_keys)
               assert set(case)=={'case_id','nominal_success_artifact','intended_consequence','source'}
-          assert x['instructions']['project_x_terms_provided'] is False
-          assert x['instructions']['oracle_provided'] is False
-          assert x['instructions']['domain_labels_provided'] is False
-          assert x['instructions']['expected_obligation_families_provided'] is False
-          assert x['instructions']['designer_reasoning_provided'] is False
+          guards=x['contamination_guards']
+          assert guards == {
+              'project_x_terms_provided':False,
+              'oracle_provided':False,
+              'domain_labels_provided':False,
+              'expected_obligation_families_provided':False,
+              'designer_reasoning_provided':False,
+              'scoring_rubric_provided':False,
+          }
           PY
       - name: Seal preprimary gate artifacts
         shell: bash
@@ -61,9 +66,16 @@ jobs:
           sha256sum \
             "$ROOT/RG3_DISPOSITION.md" \
             "$ROOT/PRELOCK.md" \
+            "$ROOT/PRELOCK_CORRECTION_001.md" \
             "$ROOT/CORPUS_V0_1.json" \
             "$ROOT/SOURCE_AUDIT_V0_1.md" \
             "$ROOT/CLAIM_SURFACE_MATRIX_V0_1.csv" \
+            "$ROOT/COMPETITIVE_FRONTIER_V0_1.md" \
+            "$ROOT/ZERO_SHOT_COMPILER_CRUCIBLE_V0_1.md" \
+            "$ROOT/SOURCE_BOUND_EVIDENCE_PLAN_V0_1.schema.json" \
+            "$ROOT/NATIVE_VOCABULARY_PROVENANCE.json" \
+            "$ROOT/HOLDOUT_CONTAMINATION_LEDGER_V0_1.md" \
+            "$ROOT/ARM_B_STRONG_LLM_PROTOCOL_V0_1.md" \
             "$ROOT/validate_gate.py" \
             "$ROOT/make_blind_arm_package.py" > "$OUT/MANIFEST.sha256"
           python - "$OUT/SEAL.json" "$GITHUB_SHA" /tmp/category-kill-gate-v01-blind/ARM_INPUT_V0_1.json /tmp/category-kill-gate-v01-reveal/REVEAL_MAP_V0_1.json <<'PY'
@@ -81,6 +93,10 @@ jobs:
             'blind_and_reveal_artifacts_separated':True,
             'source_audit_cases_qualified':8,
             'claim_surface_rows':8,
+            'compiler_crucible_prelocked':True,
+            'native_vocabulary_frozen':True,
+            'holdout_contamination_ledger_monotonic':True,
+            'neutral_llm_baseline_protocol_frozen':True,
             'provider_calls':0,
             'provider_mutations':0,
             'primary_evidence_consumed':False,
