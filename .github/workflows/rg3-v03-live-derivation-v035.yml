@@ -1,0 +1,83 @@
+name: RG3 v03 Live Derivation v0.3.5
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/LIVE_DERIVATION_TRIGGER_V035
+
+permissions:
+  contents: read
+
+jobs:
+  qualify-live-derivation-v035:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Verify canonical derivation inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object execution/rg3-v03/run_live_e0_v034.sh)" = 'd89fb54274396741048f385c82194fd8d2e60f05'
+          test "$(git hash-object execution/rg3-v03/derive_live_e0_v035.py)" = 'fe90675c5c3bf6b108fcaef9b17c10fdc4bd9708'
+          test "$(git hash-object execution/rg3-v03/seal_stripe_e05_v035.py)" = 'ec9879f18d61b58db6571b4368ca67e6fecc587a'
+          test "$(git hash-object execution/rg3-v03/run_shadow_e0_v035.sh)" = '5726da8fbd6d07b2730be5455d40a4d69527421e'
+          test "$(git hash-object execution/rg3-v03/adjudicate_tests_v035.py)" = '36951c52ac76a68f99157d0af037314daf398353'
+          test "$(git hash-object execution/rg3-v03/stripe_schema_sentinel_v035.py)" = '069e77c2b8a486ce5ff7595e4d9ed72d7ad9276d'
+          python -m py_compile execution/rg3-v03/derive_live_e0_v035.py execution/rg3-v03/seal_stripe_e05_v035.py
+      - name: Derive and statically audit live v0.3.5 runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/rg3-live-derivation-v035; mkdir -p /tmp/rg3-live-derivation-v035
+          python execution/rg3-v03/derive_live_e0_v035.py \
+            --source execution/rg3-v03/run_live_e0_v034.sh \
+            --out /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh \
+            --receipt /tmp/rg3-live-derivation-v035/LIVE_DERIVATION_V035.json
+          bash -n /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh
+          grep -F 'patch_e0_v035.py' /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh >/dev/null
+          grep -F 'run_shadow_e0_v035.sh' /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh >/dev/null
+          grep -F 'stripe_schema_sentinel_v035.py' /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh >/dev/null
+          grep -F 'seal_stripe_e05_v035.py' /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh >/dev/null
+          grep -F '241f4497d18708012be4da00cd6fbc97643e594371641fff1de2ac9ac7c92c8f' /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh >/dev/null
+          ! grep -F '0be42e97bb8a0e9ef966cadadfea2211f2443fac4bceff9bebea21a56be41603' /tmp/rg3-live-derivation-v035/run_live_e0_v035.derived.sh >/dev/null
+          echo 'LIVE_V035_DERIVATION_STATIC_AUDIT=PASS; PROVIDER_CALLS=0; MUTATIONS=0; PRIMARY_EVIDENCE=0'
+      - name: Prove E0.5 sealer rejects synthetic attestation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          root=Path('/tmp/rg3-live-derivation-v035/sealer-negative'); root.mkdir(parents=True,exist_ok=True)
+          reps=[]; first=[]; terminal=[]
+          for i in range(1,6):
+              s={'initial_status':'pending','terminal_status':'succeeded','first_effect_latency':1.0,'terminal_latency':2.0}
+              f={'initial_status':'succeeded','terminal_status':'failed','first_effect_latency':1.5,'terminal_latency':2.5}
+              reps.append({'rep':i,'async_success':s,'async_failure':f}); first.append(1.5); terminal.append(2.5)
+          cal={'provider':'stripe','repetitions':5,'first_effect_latencies':first,'terminal_latencies':terminal,'D_obs_seconds':10,'H_check_seconds':30,'observation_max_gap_seconds':5.0}
+          cp=root/'cal.json'; cp.write_text(json.dumps(cal,sort_keys=True,separators=(',',':')))
+          result={'phase':'STRIPE_E0_COMPLETE_PENDING_E0_5_SEAL','primary_evidence_consumed':False,'test_mode_confirmed':True,'api_version':'2026-08-26.dahlia','calibration':cal,'calibration_sha256':hashlib.sha256(cp.read_bytes()).hexdigest(),'repetitions':reps}
+          (root/'result.json').write_text(json.dumps(result,sort_keys=True,separators=(',',':')))
+          att={'phase':'LIVE_E0_V0_3_5_COMPLETE','real_provider_interaction':False,'real_payment_mutations':False,'primary_evidence_consumed':False,'executor_sha256':'241f4497d18708012be4da00cd6fbc97643e594371641fff1de2ac9ac7c92c8f','live_mode_key_available':False}
+          (root/'att.json').write_text(json.dumps(att,sort_keys=True,separators=(',',':')))
+          PY
+          set +e
+          python execution/rg3-v03/seal_stripe_e05_v035.py --e0-result /tmp/rg3-live-derivation-v035/sealer-negative/result.json --calibration /tmp/rg3-live-derivation-v035/sealer-negative/cal.json --attestation /tmp/rg3-live-derivation-v035/sealer-negative/att.json --out-dir /tmp/rg3-live-derivation-v035/forbidden-lock >/tmp/sealer.out 2>/tmp/sealer.err
+          rc=$?
+          set -e
+          test "$rc" -ne 0
+          grep -F 'synthetic/non-live attestation' /tmp/sealer.err >/dev/null
+          test ! -e /tmp/rg3-live-derivation-v035/forbidden-lock/STRIPE_E0_5_LOCK.json
+          echo 'E05_SYNTHETIC_GUILLOTINE=PASS; LIVE_LOCK_CREATED=FALSE'
+      - name: Upload provider-free derivation evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-live-derivation-v035
+          path: /tmp/rg3-live-derivation-v035
+          if-no-files-found: error
+          retention-days: 30
