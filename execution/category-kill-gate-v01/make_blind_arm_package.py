@@ -41,25 +41,19 @@ def main() -> int:
             "expected_obligation_families": case["expected_obligation_families"],
         }
 
+    # Common arm input contains case payload only.  Arm-specific protocols are
+    # separate artifacts so the neutral LLM baseline is never shown Project X
+    # ontology labels or scoring categories before its answer is frozen.
     arm = {
         "gate": corpus["corpus_id"],
-        "package": "BLIND_ARM_INPUT_V0_1",
-        "instructions": {
+        "package": "BLIND_CASE_PAYLOAD_V0_1",
+        "contamination_guards": {
             "project_x_terms_provided": False,
             "oracle_provided": False,
             "domain_labels_provided": False,
             "expected_obligation_families_provided": False,
             "designer_reasoning_provided": False,
-            "required_output_fields": [
-                "verdict",
-                "max_justified_claim",
-                "unsupported_upgrade_detected",
-                "missing_evidence",
-                "minimal_evidence_plan",
-                "bespoke_semantic_rules_used",
-                "generic_obligation_families_used"
-            ],
-            "allowed_verdicts": ["ESTABLISHED", "REFUTED", "UNKNOWN"]
+            "scoring_rubric_provided": False
         },
         "cases": arm_cases,
     }
