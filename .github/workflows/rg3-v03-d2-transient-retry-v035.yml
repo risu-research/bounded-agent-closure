@@ -1,0 +1,74 @@
+name: RG3 v03 D2 Transient Retry v0.3.5
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/D2_TRIGGER_V035
+
+permissions:
+  contents: read
+
+jobs:
+  d2-transient-retry:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Install exact frozen-runtime dependencies
+        run: python -m pip install --disable-pip-version-check 'pydantic==2.13.4' 'PyYAML==6.0.3'
+      - name: Verify D2 precommit and executor identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object execution/rg3-v03/D2_TRANSIENT_RETRY_PRECOMMIT_V035.json)" = '357e2eb039b37cb368f07f838782d924b7bfff7d'
+          test "$(git hash-object execution/rg3-v03/d2_transient_retry_fault_injection_v035.py)" = 'ad2865804037d5640650698e21731604515927af'
+          python -m py_compile execution/rg3-v03/d2_transient_retry_fault_injection_v035.py
+      - name: Reconstruct exact frozen v0.4 provider stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=execution/rg3-v03; WORK=/tmp/rg3-d2-v035
+          rm -rf "$WORK"; mkdir -p "$WORK/minimal" "$WORK/out"
+          cat "$BASE/minimal/00.b64" "$BASE/minimal/01.b64" "$BASE"/minimal02b/{00,01,02}.txt "$BASE"/minimal03/{00,01}.txt "$BASE/minimal03c/00.txt" "$BASE/minimal03d/00.txt "$BASE"/minimal03e/{00,01}.txt "$BASE/minimal/04.b64" "$BASE/minimal/05.b64" "$BASE/minimal/06.b64" "$BASE/minimal/07.b64" "$BASE"/minimal08/{00,01}.txt > "$WORK/minimal/minimal.b64"
+          base64 --decode "$WORK/minimal/minimal.b64" > "$WORK/minimal/minimal.zip"
+          printf '%s  %s\n' '3baffd98c72c4eb498eef77628e89ec884bd56e911670fca6e8d1e944019c73f' "$WORK/minimal/minimal.zip" | sha256sum -c -
+          unzip -q "$WORK/minimal/minimal.zip" -d "$WORK/minimal/root"
+          SEALED="$WORK/minimal/root/rg3_v04_minimal"
+          python "$SEALED/scripts/verify_preprimary.py" "$SEALED"
+          printf '%s\n' "$SEALED" > "$WORK/sealed_root"
+          echo 'D2_FROZEN_PROVIDER_STACK=PASS; PROVIDER_CALLS=0; PRIMARY_EVIDENCE=0'
+      - name: Execute provider-free differential fault injection
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK=/tmp/rg3-d2-v035; SEALED="$(cat "$WORK/sealed_root")"
+          python execution/rg3-v03/d2_transient_retry_fault_injection_v035.py execution/rg3-v03/D2_TRANSIENT_RETRY_PRECOMMIT_V035.json "$SEALED" "$WORK/out/D2_RESULT.json"
+          cp execution/rg3-v03/D2_TRANSIENT_RETRY_PRECOMMIT_V035.json "$WORK/out/D2_PRECOMMIT.json"
+      - name: Seal D2 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          root=Path('/tmp/rg3-d2-v035/out')
+          r=json.loads((root/'D2_RESULT.json').read_text())
+          assert r['status']=='PASS'
+          assert r['provider_calls']==0 and r['provider_mutations']==0 and r['primary_evidence_consumed'] is False
+          assert all(r['findings'].values())
+          files={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file() and p.name!='D2_MANIFEST.json'}
+          m=root/'D2_MANIFEST.json'; m.write_text(json.dumps({'probe':'D2_TRANSIENT_RETRY_DIFFERENTIAL_FAULT_INJECTION','files':files,'provider_calls':0,'primary_evidence_consumed':False},sort_keys=True,separators=(',',':')))
+          print('D2_RESULT_SHA256='+files['D2_RESULT.json'])
+          print('D2_MANIFEST_SHA256='+hashlib.sha256(m.read_bytes()).hexdigest())
+          PY
+      - name: Upload D2 evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-d2-transient-retry-v035
+          path: /tmp/rg3-d2-v035/out
+          if-no-files-found: error
+          retention-days: 30
