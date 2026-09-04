@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           script=execution/rg3-v03/run_live_e0_v032.sh
-          printf '%s  %s\n' 'e1267cc641b6cd2dc599e079a0040db13ff97af32ec56de1e3fb727600cd73a8' "$script" | sha256sum -c -
+          test "$(git hash-object "$script")" = 'b2256dce17dd6a865aeefd0e7c5e91e994225396'
           bash -n "$script"
           bash "$script"
       - name: Upload secret-free E0 evidence or failure receipt
