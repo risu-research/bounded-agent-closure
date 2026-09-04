@@ -1,7 +1,7 @@
 RG3_AUTOPSY_TRIGGER_V035
 triggered_on=2026-09-04
-attempt=2
-scope=PROVIDER_FREE_STATIC_AUTOPSY_ONLY
+attempt=3
+scope=PROVIDER_FREE_STATIC_AUTOPSY_PLUS_FROZEN_PROVIDER_STACK
 provider_calls=0
 provider_mutations=0
 primary_evidence_consumed=false
