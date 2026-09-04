@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+import csv
 import json
 from collections import Counter
 from pathlib import Path
@@ -8,6 +9,8 @@ ROOT = Path(__file__).resolve().parent
 CORPUS = ROOT / "CORPUS_V0_1.json"
 PRELOCK = ROOT / "PRELOCK.md"
 DISPOSITION = ROOT / "RG3_DISPOSITION.md"
+SOURCE_AUDIT = ROOT / "SOURCE_AUDIT_V0_1.md"
+CLAIM_MATRIX = ROOT / "CLAIM_SURFACE_MATRIX_V0_1.csv"
 
 ALLOWED_ORACLES = {
     "UNKNOWN_FROM_NOMINAL_ARTIFACT",
@@ -20,7 +23,7 @@ def fail(msg: str) -> None:
 
 
 def main() -> int:
-    for p in (CORPUS, PRELOCK, DISPOSITION):
+    for p in (CORPUS, PRELOCK, DISPOSITION, SOURCE_AUDIT, CLAIM_MATRIX):
         if not p.is_file() or p.stat().st_size == 0:
             fail(f"missing or empty {p.name}")
 
@@ -108,9 +111,26 @@ def main() -> int:
     if "no Stripe v0.5 live E0" not in disposition:
         fail("live-RG3 stop condition missing")
 
+    audit = SOURCE_AUDIT.read_text()
+    if "Qualified cases: **8 / 8**" not in audit:
+        fail("source audit must qualify exactly 8/8 before arm execution")
+    if "NOT AN ARM RESULT" not in audit:
+        fail("source audit/arm separation invariant missing")
+
+    with CLAIM_MATRIX.open(newline="") as f:
+        rows = list(csv.DictReader(f))
+    if len(rows) != 8:
+        fail("claim surface matrix must contain exactly eight rows")
+    matrix_ids = [r.get("case_id") for r in rows]
+    if set(matrix_ids) != set(ids) or len(set(matrix_ids)) != 8:
+        fail("claim surface matrix/corpus identity mismatch")
+    if any(r.get("source_audit") != "PASS" for r in rows):
+        fail("claim surface matrix contains unqualified case")
+
     print("CATEGORY_GATE_V0_1_VALIDATE=PASS")
     print(f"cases={len(cases)} domains={dict(sorted(counts.items()))} sources={len(set(sources))}")
     print(f"generic_families={len(allowset)} false_decisive_claims_max={rules['false_decisive_claims_max']}")
+    print("source_audit=8/8 claim_surface_matrix=8/8")
     return 0
 
 
