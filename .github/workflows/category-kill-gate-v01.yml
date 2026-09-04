@@ -33,6 +33,8 @@ jobs:
             "$ROOT/RG3_DISPOSITION.md" \
             "$ROOT/PRELOCK.md" \
             "$ROOT/CORPUS_V0_1.json" \
+            "$ROOT/SOURCE_AUDIT_V0_1.md" \
+            "$ROOT/CLAIM_SURFACE_MATRIX_V0_1.csv" \
             "$ROOT/validate_gate.py" > "$OUT/MANIFEST.sha256"
           python - "$OUT/SEAL.json" "$GITHUB_SHA" <<'PY'
           from pathlib import Path
@@ -43,6 +45,8 @@ jobs:
             'status':'SEALED_PREPRIMARY_PENDING_ARM_EXECUTION',
             'commit':sys.argv[2],
             'manifest_sha256':hashlib.sha256(manifest).hexdigest(),
+            'source_audit_cases_qualified':8,
+            'claim_surface_rows':8,
             'provider_calls':0,
             'provider_mutations':0,
             'primary_evidence_consumed':False,
