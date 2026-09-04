@@ -1,5 +1,6 @@
 RG3_STRIPE_LIVE_E0_TRIGGER_V4
 triggered_on=2026-09-04
+attempt=2
 scope=E0_ONLY
 primary_evidence_consumed=false
 disposable_sandbox=true
@@ -7,4 +8,4 @@ generic_core_immutable=true
 frozen_rg3_minimal_zip_sha256=3baffd98c72c4eb498eef77628e89ec884bd56e911670fca6e8d1e944019c73f
 base_e0_v03_zip_sha256=df016b10ae72439a24d5611b6cacee42973d8d25f2a632b65e11eed6691d2495
 execution_compatibility=0.3.2
-orchestrator_sha256=e1267cc641b6cd2dc599e079a0040db13ff97af32ec56de1e3fb727600cd73a8
+orchestrator_git_blob=b2256dce17dd6a865aeefd0e7c5e91e994225396
