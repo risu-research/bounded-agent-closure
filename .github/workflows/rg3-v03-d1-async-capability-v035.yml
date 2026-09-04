@@ -1,0 +1,123 @@
+name: RG3 v03 D1 Async Capability v0.3.5
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/D1_TRIGGER_V035
+
+permissions:
+  contents: read
+
+jobs:
+  d1-async-capability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Install exact frozen-runtime dependencies
+        run: python -m pip install --disable-pip-version-check 'pydantic==2.13.4' 'PyYAML==6.0.3'
+      - name: Verify precommit and probe identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object execution/rg3-v03/AUTOPSY_HYPOTHESES_V035.json)" = '4673509742140fbbf0804743950a2faf00e25ea7'
+          test "$(git hash-object execution/rg3-v03/async_initial_microprobe_v035.py)" = '8997cc83c81a3875a4c81a3d8c463e41dcec018e'
+          python -m py_compile execution/rg3-v03/async_initial_microprobe_v035.py
+      - name: Reconstruct and verify exact frozen provider stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=execution/rg3-v03; WORK=/tmp/rg3-d1-v035
+          rm -rf "$WORK"; mkdir -p "$WORK/minimal" "$WORK/private" "$WORK/public"; chmod 700 "$WORK/private"
+          cat "$BASE/minimal/00.b64" "$BASE/minimal/01.b64" "$BASE"/minimal02b/{00,01,02}.txt "$BASE"/minimal03/{00,01}.txt "$BASE/minimal03c/00.txt" "$BASE/minimal03d/00.txt" "$BASE"/minimal03e/{00,01}.txt "$BASE/minimal/04.b64" "$BASE/minimal/05.b64" "$BASE/minimal/06.b64" "$BASE/minimal/07.b64" "$BASE"/minimal08/{00,01}.txt > "$WORK/minimal/minimal.b64"
+          base64 --decode "$WORK/minimal/minimal.b64" > "$WORK/minimal/minimal.zip"
+          printf '%s  %s\n' '3baffd98c72c4eb498eef77628e89ec884bd56e911670fca6e8d1e944019c73f' "$WORK/minimal/minimal.zip" | sha256sum -c -
+          unzip -q "$WORK/minimal/minimal.zip" -d "$WORK/minimal/root"
+          SEALED="$WORK/minimal/root/rg3_v04_minimal"
+          python "$SEALED/scripts/verify_preprimary.py" "$SEALED"
+          printf '%s\n' "$SEALED" > "$WORK/private/sealed_root"
+          cp execution/rg3-v03/AUTOPSY_HYPOTHESES_V035.json "$WORK/public/PRECOMMIT.json"
+      - name: Acquire one fresh claimable sandbox credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK=/tmp/rg3-d1-v035
+          curl --proto '=https' --tlsv1.2 -fsSLo "$WORK/stripe-cli.deb" 'https://github.com/stripe/stripe-cli/releases/download/v1.50.10/stripe_1.50.10_linux_amd64.deb'
+          printf '%s  %s\n' 'ad3e9c89a6c464a88a7b2808f5430c8a04908196be233e870d973fd4c67ec474' "$WORK/stripe-cli.deb" | sha256sum -c -
+          mkdir -p "$WORK/stripe-cli-root" "$WORK/home" "$WORK/config"
+          dpkg-deb -x "$WORK/stripe-cli.deb" "$WORK/stripe-cli-root"
+          STRIPE_BIN="$(find "$WORK/stripe-cli-root" -type f -name stripe -perm -111 | head -n1)"
+          "$STRIPE_BIN" version | grep -F '1.50.10'
+          export HOME="$WORK/home" XDG_CONFIG_HOME="$WORK/config" STRIPE_CONFIG_DIR="$WORK/config/stripe" STRIPE_CLI_TELEMETRY_OPTOUT=1
+          mkdir -p "$STRIPE_CONFIG_DIR"; : > "$STRIPE_CONFIG_DIR/config.toml"
+          EMAIL="$(git log -1 --format=%ae)"
+          "$STRIPE_BIN" sandbox create --email "$EMAIL" --non-interactive >"$WORK/private/sandbox.out" 2>"$WORK/private/sandbox.err"
+          python - "$WORK/private/sandbox.out" "$WORK/private/secret" <<'PY'
+          from pathlib import Path
+          import json,sys
+          text=Path(sys.argv[1]).read_text(errors='replace'); d=json.JSONDecoder(); found=[]
+          for i,c in enumerate(text):
+              if c!='{': continue
+              try: o,_=d.raw_decode(text[i:])
+              except Exception: continue
+              if isinstance(o,dict) and isinstance(o.get('secret_key'),str) and o['secret_key'].startswith('rkcs_'): found.append(o['secret_key'])
+          found=list(dict.fromkeys(found))
+          if len(found)!=1: raise SystemExit('claimable sandbox secret extraction failed')
+          Path(sys.argv[2]).write_text(found[0])
+          PY
+          chmod 600 "$WORK/private/secret"
+          echo 'D1_CREDENTIAL=PASS; CLASS=rkcs_; LIVE_MODE_KEY=NOT_ACQUIRED'
+      - name: Execute exactly one prelocked D1 microprobe
+        id: probe
+        shell: bash
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          WORK=/tmp/rg3-d1-v035; SEALED="$(cat "$WORK/private/sealed_root")"; SECRET="$(cat "$WORK/private/secret")"
+          echo "::add-mask::$SECRET"
+          export STRIPE_SECRET_KEY="$SECRET" PYTHONPATH="$SEALED" RG3_D1_OUT="$WORK/public/D1_RESULT.json"
+          python execution/rg3-v03/async_initial_microprobe_v035.py
+      - name: Seal secret-free diagnostic evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK=/tmp/rg3-d1-v035
+          test -f "$WORK/public/D1_RESULT.json"
+          python - "$WORK/public" "$WORK/private/secret" <<'PY'
+          from pathlib import Path
+          import hashlib,json,sys
+          root=Path(sys.argv[1]); secret=Path(sys.argv[2]).read_text().encode(); files={}
+          for p in sorted(root.iterdir()):
+              if not p.is_file() or p.name=='D1_MANIFEST.json': continue
+              raw=p.read_bytes()
+              if secret in raw: raise SystemExit('secret leakage detected')
+              for marker in (b'sk_live_',b'rk_live_'):
+                  if marker in raw: raise SystemExit('live credential marker detected')
+              files[p.name]=hashlib.sha256(raw).hexdigest()
+          out=root/'D1_MANIFEST.json'; out.write_text(json.dumps({'probe':'D1_ASYNC_INITIAL_CAPABILITY_MICROPROBE','files':files,'primary_evidence_consumed':False},sort_keys=True,separators=(',',':')))
+          print('D1_MANIFEST_SHA256='+hashlib.sha256(out.read_bytes()).hexdigest())
+          PY
+          rm -rf "$WORK/private"
+      - name: Upload D1 diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-d1-async-capability-v035
+          path: /tmp/rg3-d1-v035/public
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce D1 pass for workflow conclusion
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/rg3-d1-v035/public/D1_RESULT.json'))
+          print('D1_FINAL_STATUS='+p['status'])
+          if p['status']!='PASS': raise SystemExit(2)
+          PY
