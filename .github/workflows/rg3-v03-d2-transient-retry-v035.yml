@@ -59,7 +59,14 @@ jobs:
           r=json.loads((root/'D2_RESULT.json').read_text())
           assert r['status']=='PASS'
           assert r['provider_calls']==0 and r['provider_mutations']==0 and r['primary_evidence_consumed'] is False
-          assert all(r['findings'].values())
+          f=r['findings']
+          assert f['frozen_transport_single_transient_http_error_is_fatal'] is True
+          assert f['bounded_retry_recovers_retriable_get'] is True
+          assert f['bounded_retry_recovers_idempotent_post_with_same_key'] is True
+          assert f['nontransient_4xx_fail_closed'] is True
+          assert f['nonidempotent_post_not_retried'] is True
+          assert f['persistent_transient_failure_bounded'] is True
+          assert f['semantic_claims_changed'] is False
           files={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.iterdir()) if p.is_file() and p.name!='D2_MANIFEST.json'}
           m=root/'D2_MANIFEST.json'; m.write_text(json.dumps({'probe':'D2_TRANSIENT_RETRY_DIFFERENTIAL_FAULT_INJECTION','files':files,'provider_calls':0,'primary_evidence_consumed':False},sort_keys=True,separators=(',',':')))
           print('D2_RESULT_SHA256='+files['D2_RESULT.json'])
