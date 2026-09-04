@@ -20,8 +20,9 @@ python "$BASE/patch_e0_v035.py" --script "$CAP/scripts/stripe_e0.py" --receipt "
 (cd "$CAP" && pytest -q tests/test_capsule.py -k 'not test_guillotine_never_returns_provider_object')
 python "$BASE/adjudicate_tests_v035.py" --test-file "$CAP/tests/test_capsule.py" --executor "$CAP/scripts/stripe_e0.py" --out-dir "$WORK/adjudicated"
 cp "$WORK/adjudicated/TEST_ADJUDICATION_V035.json" "$OUT/TEST_ADJUDICATION_V035.json"
-# Run the full 16-test suite with only the formally adjudicated reality-shaped fixture replacement.
-(cd "$CAP" && pytest -q "$WORK/adjudicated/test_capsule_v035_corrected.py")
+# Preserve original relative-path semantics: the corrected copy executes inside the ephemeral capsule tests directory.
+cp "$WORK/adjudicated/test_capsule_v035_corrected.py" "$CAP/tests/test_capsule_v035_corrected.py"
+(cd "$CAP" && pytest -q tests/test_capsule_v035_corrected.py)
 # Same-day official Stripe OpenAPI sentinel: fail before provider access on schema-assumption drift.
 python "$BASE/stripe_schema_sentinel_v035.py" --executor "$CAP/scripts/stripe_e0.py" --out "$OUT/STRIPE_SCHEMA_SENTINEL_V035.json"
 python "$BASE/shadow_stripe_e0_v035.py" --executor "$CAP/scripts/stripe_e0.py" --sealed-root "$SEALED" --out "$OUT/shadow"
