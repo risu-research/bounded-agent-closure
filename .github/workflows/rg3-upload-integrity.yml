@@ -1,0 +1,19 @@
+name: RG3 upload integrity probe
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v02]
+permissions:
+  contents: read
+jobs:
+  verify-upload-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify first five legacy upload chunks only
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat execution/rg3_v04.part00 execution/rg3_v04.part01 execution/rg3_v04.part02 execution/rg3_v04.part03 execution/rg3_v04.part04 > /tmp/rg3.prefix150k.b64
+          test "$(wc -c < /tmp/rg3.prefix150k.b64)" -eq 150000
+          echo '26ec3b2c5cba7b61696d1d72c1621361e63d699284322ae9b32b732aab304b23  /tmp/rg3.prefix150k.b64' | sha256sum -c -
+          echo 'UPLOAD_PREFIX_0_4_EXACT=PASS'
