@@ -17,10 +17,6 @@ def call_name(n: ast.AST) -> str:
     return ""
 
 
-def const_str(n: ast.AST):
-    return n.value if isinstance(n, ast.Constant) and isinstance(n.value, str) else None
-
-
 def enclosing_functions(tree: ast.AST):
     funcs = {}
     for n in ast.walk(tree):
@@ -88,7 +84,8 @@ def main() -> int:
     report["special_payment_method_literals"] = sorted(pms)
     report["large_numeric_constants"] = sorted(large, key=lambda x: (x["line"] or 0, x["value"]))
 
-    focus = [name for name in funcs if any(k in name.lower() for k in ("live", "full", "refund", "wait", "poll", "async", "guillotine", "request", "http", "event", "collect", "calibr"))]
+    focus_terms=("live","full","refund","wait","poll","async","guillotine","request","http","event","collect","calibr","capture","observation","schema")
+    focus = [name for name in funcs if any(k in name.lower() for k in focus_terms)]
     for name in sorted(focus):
         f = funcs[name]
         calls=[]; strings=[]
@@ -97,7 +94,7 @@ def main() -> int:
                 nm=call_name(n.func)
                 if nm: calls.append(nm)
             if isinstance(n, ast.Constant) and isinstance(n.value,str):
-                if n.value.startswith("/v1/") or n.value.startswith("pm_") or "refund" in n.value.lower() or "event" in n.value.lower():
+                if n.value.startswith("/v1/") or n.value.startswith("pm_") or "refund" in n.value.lower() or "event" in n.value.lower() or "capture" in n.value.lower():
                     strings.append(n.value)
         lines = src.splitlines()
         start=max(1,f.lineno); end=min(len(lines), getattr(f,"end_lineno",f.lineno))
