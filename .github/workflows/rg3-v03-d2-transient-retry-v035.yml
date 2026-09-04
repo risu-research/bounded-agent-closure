@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           BASE=execution/rg3-v03; WORK=/tmp/rg3-d2-v035
           rm -rf "$WORK"; mkdir -p "$WORK/minimal" "$WORK/out"
-          cat "$BASE/minimal/00.b64" "$BASE/minimal/01.b64" "$BASE"/minimal02b/{00,01,02}.txt "$BASE"/minimal03/{00,01}.txt "$BASE/minimal03c/00.txt" "$BASE/minimal03d/00.txt "$BASE"/minimal03e/{00,01}.txt "$BASE/minimal/04.b64" "$BASE/minimal/05.b64" "$BASE/minimal/06.b64" "$BASE/minimal/07.b64" "$BASE"/minimal08/{00,01}.txt > "$WORK/minimal/minimal.b64"
+          cat "$BASE/minimal/00.b64" "$BASE/minimal/01.b64" "$BASE"/minimal02b/{00,01,02}.txt "$BASE"/minimal03/{00,01}.txt "$BASE/minimal03c/00.txt" "$BASE/minimal03d/00.txt" "$BASE"/minimal03e/{00,01}.txt "$BASE/minimal/04.b64" "$BASE/minimal/05.b64" "$BASE/minimal/06.b64" "$BASE/minimal/07.b64" "$BASE"/minimal08/{00,01}.txt > "$WORK/minimal/minimal.b64"
           base64 --decode "$WORK/minimal/minimal.b64" > "$WORK/minimal/minimal.zip"
           printf '%s  %s\n' '3baffd98c72c4eb498eef77628e89ec884bd56e911670fca6e8d1e944019c73f' "$WORK/minimal/minimal.zip" | sha256sum -c -
           unzip -q "$WORK/minimal/minimal.zip" -d "$WORK/minimal/root"
