@@ -1,0 +1,7 @@
+RG3_PRIMARY_ADMISSION_TRIGGER_V035
+triggered_on=2026-09-04
+scope=PROVIDER_FREE_ADMISSION_COMPILER_QUALIFICATION_ONLY
+primary_execution_authorized=false
+real_provider_calls=0
+real_provider_mutations=0
+primary_evidence_consumed=false
