@@ -1,0 +1,53 @@
+{
+  "artifact": "RG3 Stripe E0 sandbox-provision execution compatibility delta",
+  "version": "0.3.3",
+  "base_capsule_zip_sha256": "df016b10ae72439a24d5611b6cacee42973d8d25f2a632b65e11eed6691d2495",
+  "inherits": [
+    "E0_CLAIMABLE_SANDBOX_COMPAT_V0_3_1.json",
+    "E0_EXECUTION_COMPAT_V0_3_2.json"
+  ],
+  "scope": "Stripe CLI disposable-sandbox isolation and credential recovery only",
+  "generic_core_changed": false,
+  "provider_binding_changed": false,
+  "judgment_semantics_changed": false,
+  "provider_semantics_changed": false,
+  "primary_evidence_consumed": false,
+  "observed_live_attempt": {
+    "workflow_run": 33838993474,
+    "pre_provider_gate": "PASS",
+    "stripe_cli_supply_chain_gate": "PASS",
+    "sandbox_create_command_exit": "SUCCESS",
+    "failure_class": "EXECUTION_OUTPUT_STATE",
+    "failure": "sandbox create output parser found no top-level secret_key",
+    "payment_intent_created_before_failure": false,
+    "refund_created_before_failure": false,
+    "public_artifact_id": 9924258757,
+    "public_artifact_sha256": "e0340c63a4936b8c177772d9b4eeba1188639737eaaf4dc9deea14ef363a229b"
+  },
+  "upstream_facts": {
+    "stripe_cli_version": "1.50.10",
+    "sandbox_command_source_blob": "eb3dd353d45740536f23e448598f4f449958b68a",
+    "canary_runner_source_blob": "f21d216298278689698612f6a2df40b549e73703",
+    "normal_provision_output": "top-level secret_key/publishable_key/claim_url/account_id/expires_at JSON",
+    "successful_provision_side_effect": "saveSandboxToConfig writes test_mode_api_key plus sandbox claim metadata before output",
+    "official_isolation_pattern": "set XDG_CONFIG_HOME and STRIPE_CONFIG_DIR, create fresh stripe/config.toml",
+    "test_mode_api_key_field": "test_mode_api_key"
+  },
+  "repair": {
+    "isolation": "Match Stripe CLI canary isolation exactly with fresh XDG_CONFIG_HOME, STRIPE_CONFIG_DIR, and empty config.toml; disable telemetry.",
+    "credential_recovery": "Decode all JSON objects in private stdout and independently inspect the private isolated TOML config. Admit exactly one rkcs_ candidate only.",
+    "claimable_provenance": "Require sandbox_claim_url and sandbox_expires_at in the isolated config.",
+    "live_key_guard": "Reject any non-empty live_mode_api_key in isolated config and then require whoami live_mode_key.available=false.",
+    "failure_capture": "Parser and whoami-verification failures are trapped into secret-free failure receipts before exit."
+  },
+  "offline_qualification": {
+    "sandbox_parser_positive_controls": "2/2 PASS",
+    "sandbox_parser_negative_controls": "3/3 PASS",
+    "negative_controls": [
+      "live_mode_api_key present",
+      "claim metadata missing",
+      "non-claimable rk_test_ credential"
+    ]
+  },
+  "scientific_rule": "This delta repairs sandbox execution isolation and credential recovery only. It cannot alter, reinterpret, or repair any PaymentIntent/refund observation or verdict."
+}
