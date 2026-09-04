@@ -1,0 +1,42 @@
+name: RG3 v03 Stripe live E0 v0.3.2
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/LIVE_E0_TRIGGER_V4
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rg3-v03-stripe-live-e0-v032
+  cancel-in-progress: false
+
+jobs:
+  stripe-live-e0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact RG3 runtime dependencies
+        run: python -m pip install --disable-pip-version-check 'pydantic==2.13.4' 'PyYAML==6.0.3' 'pytest==9.0.2'
+      - name: Verify and execute sealed E0 v0.3.2 orchestrator
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=execution/rg3-v03/run_live_e0_v032.sh
+          printf '%s  %s\n' 'e1267cc641b6cd2dc599e079a0040db13ff97af32ec56de1e3fb727600cd73a8' "$script" | sha256sum -c -
+          bash -n "$script"
+          bash "$script"
+      - name: Upload secret-free E0 evidence or failure receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-stripe-e0-v032-public-evidence
+          path: /tmp/rg3-public-v032
+          if-no-files-found: warn
+          retention-days: 30
