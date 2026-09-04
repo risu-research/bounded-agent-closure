@@ -1,0 +1,12 @@
+RG3_SHADOW_E0_TRIGGER_V035
+triggered_on=2026-09-04
+scope=PROVIDER_FREE_REFUND_SCHEMA_REALITY_CORRECTION
+real_provider_calls=0
+real_payment_mutations=0
+primary_evidence_consumed=false
+reality_failure_run_id=33870128085
+reality_failure_class=REFUND_OBJECT_HAS_NO_LIVEMODE_FIELD
+patched_executor_sha256=241f4497d18708012be4da00cd6fbc97643e594371641fff1de2ac9ac7c92c8f
+generic_core_changes=0
+provider_binding_changes=0
+judgment_changes=0
