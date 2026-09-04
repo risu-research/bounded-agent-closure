@@ -1,0 +1,41 @@
+name: RG3 v03 Shadow E0 v0.3.5
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/SHADOW_E0_TRIGGER_V035
+
+permissions:
+  contents: read
+
+jobs:
+  shadow-e0-v035:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - run: python -m pip install --disable-pip-version-check 'pydantic==2.13.4' 'PyYAML==6.0.3' 'pytest==9.0.2'
+      - name: Verify v0.3.5 canonical blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object execution/rg3-v03/patch_e0_v035.py)" = '5093fb5461930281bfdd52654024f0da14a41836'
+          test "$(git hash-object execution/rg3-v03/shadow_stripe_e0_v035.py)" = 'b12013a66f88ea04dcd434e44a8825a12b5360de'
+          test "$(git hash-object execution/rg3-v03/run_shadow_e0_v035.sh)" = 'de082f06f57d63ca8d1db4c35fd4599a6b83dd12'
+          python -m py_compile execution/rg3-v03/patch_e0_v035.py execution/rg3-v03/shadow_stripe_e0_v035.py
+          bash -n execution/rg3-v03/run_shadow_e0_v035.sh
+      - name: Run Refund-schema-correct shadow qualification
+        shell: bash
+        run: bash execution/rg3-v03/run_shadow_e0_v035.sh
+      - name: Upload v0.3.5 shadow evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-shadow-e0-v035
+          path: /tmp/rg3-shadow-v035-public
+          if-no-files-found: error
+          retention-days: 30
