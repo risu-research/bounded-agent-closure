@@ -1,5 +1,6 @@
 RG3_SHADOW_E0_TRIGGER_V035
 triggered_on=2026-09-04
+attempt=3
 scope=PROVIDER_FREE_REFUND_SCHEMA_REALITY_CORRECTION_PLUS_OPENAPI_SENTINEL
 real_provider_calls=0
 real_payment_mutations=0
