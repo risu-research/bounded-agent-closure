@@ -25,7 +25,7 @@ jobs:
           set -euo pipefail
           test "$(git hash-object execution/rg3-v03/patch_e0_v035.py)" = '5093fb5461930281bfdd52654024f0da14a41836'
           test "$(git hash-object execution/rg3-v03/shadow_stripe_e0_v035.py)" = 'b12013a66f88ea04dcd434e44a8825a12b5360de'
-          test "$(git hash-object execution/rg3-v03/run_shadow_e0_v035.sh)" = '8ec3dca47c7dd639f78c936eb2b2f5b8c12c14a7'
+          test "$(git hash-object execution/rg3-v03/run_shadow_e0_v035.sh)" = '5726da8fbd6d07b2730be5455d40a4d69527421e'
           test "$(git hash-object execution/rg3-v03/adjudicate_tests_v035.py)" = '36951c52ac76a68f99157d0af037314daf398353'
           test "$(git hash-object execution/rg3-v03/stripe_schema_sentinel_v035.py)" = '069e77c2b8a486ce5ff7595e4d9ed72d7ad9276d'
           python -m py_compile execution/rg3-v03/patch_e0_v035.py execution/rg3-v03/shadow_stripe_e0_v035.py execution/rg3-v03/adjudicate_tests_v035.py execution/rg3-v03/stripe_schema_sentinel_v035.py
