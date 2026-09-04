@@ -12,12 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify chunk hashes and reconstruct frozen minimal ZIP
+      - name: Diagnose every chunk hash without provider access
         shell: bash
         run: |
           set -euo pipefail
           base=execution/rg3-v03
-          check() { printf '%s  %s\n' "$1" "$2" | sha256sum -c -; }
+          bad=0
+          check() {
+            exp="$1"; f="$2"; got="$(sha256sum "$f" | awk '{print $1}')"
+            printf '%s expected=%s actual=%s\n' "$f" "$exp" "$got"
+            if [ "$got" != "$exp" ]; then bad=1; fi
+          }
           check fc2ad3297847dc9cebe0b46817ad56e9381b0c8a69ea1183a428b144aa358e3f "$base/minimal/00.b64"
           check d5aa004ee01188fd17526d618046e6a6f26d795826f0fd27e150f1335604a95e "$base/minimal/01.b64"
           check 83f59983f1585721a2410a61d5428826b7bb068d7970c6b2081e5aefa4a6d8ae "$base/minimal/02.b64"
@@ -28,6 +33,7 @@ jobs:
           check 1a10d25e17fcfaed355204b9587cd94998caa37e250ee6576a206d8a02ff479d "$base/minimal/07.b64"
           check c0e9a660a6ebf4dbc92eed675bfc94144e4e1123a67b73cdd7c85f5afe375c43 "$base/minimal08/00.txt"
           check 9ca154752f5574f15f58fb5a56b602c890f9a0ad48dc3817b2d88bfbd541cd10 "$base/minimal08/01.txt"
+          if [ "$bad" -ne 0 ]; then echo 'TRANSPORT_INTEGRITY=FAIL'; exit 1; fi
           mkdir -p /tmp/rg3
           cat "$base"/minimal/{00,01,02,03,04,05,06,07}.b64 "$base"/minimal08/{00,01}.txt > /tmp/rg3/minimal.b64
           base64 --decode /tmp/rg3/minimal.b64 > /tmp/rg3/minimal.zip
@@ -41,4 +47,5 @@ jobs:
           test -f "$root/scripts/verify_preprimary.py"
           python "$root/scripts/verify_preprimary.py" "$root"
       - name: Assert provider was never contacted
+        if: always()
         run: echo 'PROVIDER_MUTATIONS=0; TRANSPORT_ONLY=1'
