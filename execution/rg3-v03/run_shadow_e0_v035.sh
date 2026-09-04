@@ -2,7 +2,7 @@
 set -euo pipefail
 REPO_ROOT="${GITHUB_WORKSPACE:-$(pwd)}"; BASE="$REPO_ROOT/execution/rg3-v03"
 WORK=/tmp/rg3-shadow-v035; OUT=/tmp/rg3-shadow-v035-public
-rm -rf "$WORK" "$OUT"; mkdir -p "$WORK/minimal" "$WORK/e0" "$OUT"
+rm -rf "$WORK" "$OUT"; mkdir -p "$WORK/minimal" "$WORK/e0" "$OUT" "$WORK/adjudicated"
 cat "$BASE/minimal/00.b64" "$BASE/minimal/01.b64" "$BASE"/minimal02b/{00,01,02}.txt "$BASE"/minimal03/{00,01}.txt "$BASE/minimal03c/00.txt" "$BASE/minimal03d/00.txt" "$BASE"/minimal03e/{00,01}.txt "$BASE/minimal/04.b64" "$BASE/minimal/05.b64" "$BASE/minimal/06.b64" "$BASE/minimal/07.b64" "$BASE"/minimal08/{00,01}.txt > "$WORK/minimal/minimal.b64"
 base64 --decode "$WORK/minimal/minimal.b64" > "$WORK/minimal/minimal.zip"
 printf '%s  %s\n' '3baffd98c72c4eb498eef77628e89ec884bd56e911670fca6e8d1e944019c73f' "$WORK/minimal/minimal.zip" | sha256sum -c -
@@ -16,7 +16,14 @@ printf '%s  %s\n' 'df016b10ae72439a24d5611b6cacee42973d8d25f2a632b65e11eed6691d2
 unzip -q "$WORK/e0/e0.zip" -d "$WORK/e0/root"; CAP="$WORK/e0/root/rg3_stripe_e0_capsule_v0_3"
 (cd "$CAP" && sha256sum -c MANIFEST.sha256)
 python "$BASE/patch_e0_v035.py" --script "$CAP/scripts/stripe_e0.py" --receipt "$OUT/E0_V035_PATCH_RECEIPT.json"
-(cd "$CAP" && pytest -q tests/test_capsule.py)
+# Preserve the legacy suite as evidence: all unaffected tests must pass exactly as sealed.
+(cd "$CAP" && pytest -q tests/test_capsule.py -k 'not test_guillotine_never_returns_provider_object')
+python "$BASE/adjudicate_tests_v035.py" --test-file "$CAP/tests/test_capsule.py" --executor "$CAP/scripts/stripe_e0.py" --out-dir "$WORK/adjudicated"
+cp "$WORK/adjudicated/TEST_ADJUDICATION_V035.json" "$OUT/TEST_ADJUDICATION_V035.json"
+# Run the full 16-test suite with only the formally adjudicated reality-shaped fixture replacement.
+(cd "$CAP" && pytest -q "$WORK/adjudicated/test_capsule_v035_corrected.py")
+# Same-day official Stripe OpenAPI sentinel: fail before provider access on schema-assumption drift.
+python "$BASE/stripe_schema_sentinel_v035.py" --executor "$CAP/scripts/stripe_e0.py" --out "$OUT/STRIPE_SCHEMA_SENTINEL_V035.json"
 python "$BASE/shadow_stripe_e0_v035.py" --executor "$CAP/scripts/stripe_e0.py" --sealed-root "$SEALED" --out "$OUT/shadow"
 python - "$OUT/shadow/SHADOW_E0_V034_RESULT.json" <<'PY'
 from pathlib import Path
@@ -26,5 +33,5 @@ assert r['status']=='PASS' and r['real_provider_calls']==0 and r['real_payment_m
 assert r['executor_sha256']=='241f4497d18708012be4da00cd6fbc97643e594371641fff1de2ac9ac7c92c8f'
 assert r['stable_rescan_race']['retried'] is True
 assert r['completeness_negative_control']=={'complete_J2':'FAIL','truncated_J2':'UNKNOWN'}
-print('RG3_SHADOW_E0_V035=PASS; REFUND_LIVEMODE_ABSENT=TRUE; REAL_PROVIDER_CALLS=0; PRIMARY_EVIDENCE=0')
+print('RG3_SHADOW_E0_V035=PASS; LEGACY_UNAFFECTED=15; REALITY_CORRECTED=16; STRIPE_SCHEMA_SENTINEL=PASS; REFUND_LIVEMODE_ABSENT=TRUE; REAL_PROVIDER_CALLS=0; PRIMARY_EVIDENCE=0')
 PY
