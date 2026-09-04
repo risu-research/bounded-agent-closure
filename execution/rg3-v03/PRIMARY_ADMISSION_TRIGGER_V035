@@ -1,6 +1,8 @@
 RG3_PRIMARY_ADMISSION_TRIGGER_V035
 triggered_on=2026-09-04
-scope=PROVIDER_FREE_ADMISSION_COMPILER_QUALIFICATION_ONLY
+attempt=2
+scope=PROVIDER_FREE_ADMISSION_COMPILER_PLUS_FROZEN_SCENARIO_PRELOCK_QUALIFICATION
+scenario_prelock_git_blob=9eb16f684c2b35b9259b3e6ef3194c5a42f07979
 primary_execution_authorized=false
 real_provider_calls=0
 real_provider_mutations=0
