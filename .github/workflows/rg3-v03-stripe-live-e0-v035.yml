@@ -1,0 +1,60 @@
+name: RG3 v03 Stripe live E0 v0.3.5
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/LIVE_E0_TRIGGER_V035
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rg3-v03-stripe-live-e0-v035
+  cancel-in-progress: false
+
+jobs:
+  stripe-live-e0-v035:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      RG3_STRIPE_TEST_KEY: ${{ secrets.RG3_STRIPE_TEST_KEY }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Install exact RG3 runtime dependencies
+        run: python -m pip install --disable-pip-version-check 'pydantic==2.13.4' 'PyYAML==6.0.3' 'pytest==9.0.2'
+      - name: Verify complete v0.3.5 execution lineage before provider access
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object execution/rg3-v03/run_live_e0_v034.sh)" = 'd89fb54274396741048f385c82194fd8d2e60f05'
+          test "$(git hash-object execution/rg3-v03/patch_e0_v034.py)" = '0bb9723a702badacc6b0ebb9fd6fd11e08dfc341'
+          test "$(git hash-object execution/rg3-v03/patch_e0_v035.py)" = '5093fb5461930281bfdd52654024f0da14a41836'
+          test "$(git hash-object execution/rg3-v03/shadow_stripe_e0_v035.py)" = 'b12013a66f88ea04dcd434e44a8825a12b5360de'
+          test "$(git hash-object execution/rg3-v03/run_shadow_e0_v035.sh)" = '5726da8fbd6d07b2730be5455d40a4d69527421e'
+          test "$(git hash-object execution/rg3-v03/adjudicate_tests_v035.py)" = '36951c52ac76a68f99157d0af037314daf398353'
+          test "$(git hash-object execution/rg3-v03/stripe_schema_sentinel_v035.py)" = '069e77c2b8a486ce5ff7595e4d9ed72d7ad9276d'
+          test "$(git hash-object execution/rg3-v03/derive_live_e0_v035.py)" = 'fe90675c5c3bf6b108fcaef9b17c10fdc4bd9708'
+          test "$(git hash-object execution/rg3-v03/seal_stripe_e05_v035.py)" = 'ec9879f18d61b58db6571b4368ca67e6fecc587a'
+          test "$(git hash-object execution/rg3-v03/run_live_e0_v035.sh)" = '9d8f712a80991f42f42abb7213ed49c2523cfa1c'
+          python -m py_compile execution/rg3-v03/patch_e0_v034.py execution/rg3-v03/patch_e0_v035.py execution/rg3-v03/shadow_stripe_e0_v035.py execution/rg3-v03/adjudicate_tests_v035.py execution/rg3-v03/stripe_schema_sentinel_v035.py execution/rg3-v03/derive_live_e0_v035.py execution/rg3-v03/seal_stripe_e05_v035.py
+          bash -n execution/rg3-v03/run_shadow_e0_v035.sh execution/rg3-v03/run_live_e0_v035.sh
+          rm -rf /tmp/rg3-live-prederive-v035; mkdir -p /tmp/rg3-live-prederive-v035
+          python execution/rg3-v03/derive_live_e0_v035.py --source execution/rg3-v03/run_live_e0_v034.sh --out /tmp/rg3-live-prederive-v035/runner.sh --receipt /tmp/rg3-live-prederive-v035/receipt.json
+          test "$(sha256sum /tmp/rg3-live-prederive-v035/runner.sh | awk '{print $1}')" = '99d2fec286ad2b1ffabf5e73eb65bdad6f66c3cf4470cc3d6e3891a8e9ae5651'
+          bash -n /tmp/rg3-live-prederive-v035/runner.sh
+          echo 'COMPLETE_V035_EXECUTION_LINEAGE=PASS; DERIVED_RUNNER_SHA=99d2fec286ad2b1ffabf5e73eb65bdad6f66c3cf4470cc3d6e3891a8e9ae5651; PROVIDER_CALLS=0; PRIMARY_EVIDENCE=0'
+      - name: Execute one shadow-gated live E0 and automatic E0.5 seal
+        shell: bash
+        run: bash execution/rg3-v03/run_live_e0_v035.sh
+      - name: Upload secret-free E0/E0.5 evidence or failure receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-stripe-live-e0-v035-public-evidence
+          path: /tmp/rg3-public-v035
+          if-no-files-found: error
+          retention-days: 30
