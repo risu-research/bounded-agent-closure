@@ -1,0 +1,6 @@
+RG3_AUTOPSY_TRIGGER_V035
+triggered_on=2026-09-04
+scope=PROVIDER_FREE_STATIC_AUTOPSY_ONLY
+provider_calls=0
+provider_mutations=0
+primary_evidence_consumed=false
