@@ -1,0 +1,32 @@
+{
+  "artifact": "RG3 Stripe E0 claimable-sandbox compatibility delta",
+  "version": "0.3.1",
+  "base_capsule_zip_sha256": "df016b10ae72439a24d5611b6cacee42973d8d25f2a632b65e11eed6691d2495",
+  "scope": "live-execution credential admission only",
+  "generic_core_changed": false,
+  "provider_binding_changed": false,
+  "judgment_semantics_changed": false,
+  "primary_evidence_consumed": false,
+  "provider_calls_during_delta_qualification": 0,
+  "upstream_reason": {
+    "stripe_cli_version": "1.50.10",
+    "stripe_cli_release_date": "2026-09-02",
+    "sandbox_source_blob_sha": "eb3dd353d45740536f23e448598f4f449958b68a",
+    "whoami_source_blob_sha": "6d6c62251c5f3575631c2020d565aed562767280",
+    "fact": "Stripe CLI v1.50.10 treats rkcs_ as the authoritative key prefix for an active CLI-created claimable sandbox; whoami reports configured test/live key availability without making API calls."
+  },
+  "admission_rule": {
+    "sk_test_": "accepted",
+    "rk_test_": "accepted",
+    "rkcs_": "accepted only when RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED=1 after same-run stripe sandbox create plus whoami test-key-present/live-key-absent verification",
+    "sk_live_": "always refused",
+    "rk_live_": "always refused",
+    "other": "refused"
+  },
+  "patched_script_sha256": "b1ecf0ed7ca6d9fd2d025f16e1b119cfb1d57737334d3642b1add23b2fc306b5",
+  "offline_qualification": {
+    "base_capsule_tests": "16/16 PASS",
+    "compatibility_delta_tests": "3/3 PASS"
+  },
+  "scientific_rule": "This delta may qualify live E0 only. It cannot alter the frozen RG3 v0.4 substrate or repair any provider-observed semantic mismatch."
+}
