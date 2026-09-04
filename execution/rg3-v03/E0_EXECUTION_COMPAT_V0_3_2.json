@@ -1,0 +1,35 @@
+{
+  "artifact": "RG3 Stripe E0 execution compatibility delta",
+  "version": "0.3.2",
+  "base_capsule_zip_sha256": "df016b10ae72439a24d5611b6cacee42973d8d25f2a632b65e11eed6691d2495",
+  "inherits": "E0_CLAIMABLE_SANDBOX_COMPAT_V0_3_1.json",
+  "scope": "E0 harness-to-frozen-binding-lock integration only",
+  "generic_core_changed": false,
+  "provider_binding_changed": false,
+  "judgment_semantics_changed": false,
+  "provider_semantics_changed": false,
+  "primary_evidence_consumed": false,
+  "observed_live_attempt": {
+    "workflow_run": 33838580297,
+    "sandbox_provisioned": true,
+    "credential_class": "rkcs_",
+    "live_mode_key_available": false,
+    "payment_intent_created_before_failure": false,
+    "refund_created_before_failure": false,
+    "failure_class": "EXECUTION_INTEGRATION",
+    "failure": "ImportError: E0 harness imported nonexistent payments_rg3.binding_lock.load_lock before any payment/refund provider mutation"
+  },
+  "root_cause": {
+    "frozen_binding_lock_public_api": ["compute"],
+    "harness_expected_nonexistent_api": "load_lock",
+    "actual_requirement": "read frozen profiles/payment_binding.lock.json and use its sealed stripe digest"
+  },
+  "repair": "Define harness-local load_lock(path) as JSON decoding of the frozen lock file; remove nonexistent import. No frozen source is modified.",
+  "patched_executor_sha256": "e90a3cb1be4663a89888857715ec9e4d4a04291b8a6698a0bbe9bd9affba2dee",
+  "offline_qualification": {
+    "base_capsule_tests": "16/16 PASS",
+    "import_bridge": "PASS",
+    "expected_frozen_stripe_binding": "sha256:f41fbe34bb0319471327f6b0fcf5f3bba730f1fc1ed904199e41b0c9c9fde09f"
+  },
+  "scientific_rule": "This delta repairs execution compatibility only. It cannot alter or reinterpret any provider-observed payment/refund outcome."
+}
