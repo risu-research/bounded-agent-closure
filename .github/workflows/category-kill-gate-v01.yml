@@ -41,10 +41,15 @@ jobs:
           import json,sys
           x=json.loads(Path(sys.argv[1]).read_text())
           assert len(x['cases'])==8
-          forbidden=('locked_oracle','reason','expected_obligation_families','domain','original_case_id')
-          raw=Path(sys.argv[1]).read_text()
-          assert all(k not in raw for k in forbidden)
+          forbidden_keys={'locked_oracle','reason','expected_obligation_families','domain','original_case_id'}
+          for case in x['cases']:
+              assert not (set(case) & forbidden_keys)
+              assert set(case)=={'case_id','nominal_success_artifact','intended_consequence','source'}
           assert x['instructions']['project_x_terms_provided'] is False
+          assert x['instructions']['oracle_provided'] is False
+          assert x['instructions']['domain_labels_provided'] is False
+          assert x['instructions']['expected_obligation_families_provided'] is False
+          assert x['instructions']['designer_reasoning_provided'] is False
           PY
       - name: Seal preprimary gate artifacts
         shell: bash
