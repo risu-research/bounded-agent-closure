@@ -25,7 +25,8 @@ jobs:
           check 4bf32ab1ca8ab1e6e71dfaa93876e877ff9d947e35fc0bdb3be64b0b992e3ce1 "$base/minimal02b/02.txt"
           check 5835f5e03184bfdf9b4155cf02093d46d383887b218985043bb7e48e5b7fb92d "$base/minimal03/00.txt"
           check 391c5d0273d071b6d07ce5e220f2fda82e08d783f03f50389d242380df1b912e "$base/minimal03/01.txt"
-          check f888ef8a15c08378886fdde36fb08cdc90fc9fd0d29c2dafc63511574f25a030 "$base/minimal03/02.txt"
+          check 38401fe73353bbf83ce15a0c0470b51710653c1ca41435abc1b6bbb42854774a "$base/minimal03c/00.txt"
+          check e2785cd05084919b76da1fe3775b2d01b0e25ccfd739349524f6d908003299cc "$base/minimal03c/01.txt"
           check a35de10c8732de822f1de679faa8331c08aeeca8d96c290080760607935a5cbd "$base/minimal/04.b64"
           check c4344ff914e3f997f67ed4511354438cc8b5f83d2fc6fc966bfa8c5df8d684c3 "$base/minimal/05.b64"
           check a511525ae03cd0aac8580eaa83c9f060035620ae50167b168946fb41d342a602 "$base/minimal/06.b64"
@@ -35,7 +36,7 @@ jobs:
           mkdir -p /tmp/rg3
           cat "$base/minimal/00.b64" "$base/minimal/01.b64" \
               "$base"/minimal02b/{00,01,02}.txt \
-              "$base"/minimal03/{00,01,02}.txt \
+              "$base"/minimal03/{00,01}.txt "$base"/minimal03c/{00,01}.txt \
               "$base/minimal/04.b64" "$base/minimal/05.b64" \
               "$base/minimal/06.b64" "$base/minimal/07.b64" \
               "$base"/minimal08/{00,01}.txt > /tmp/rg3/minimal.b64
