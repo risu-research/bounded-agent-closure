@@ -1,0 +1,110 @@
+{
+  "corpus_id": "CONSEQUENCE_CATEGORY_KILL_GATE_V0_1",
+  "status": "FROZEN_PREPRIMARY",
+  "frozen_on": "2026-09-04",
+  "cases": [
+    {
+      "id": "P1_AP2_PAYMENT_RECEIPT_VS_FULFILLMENT",
+      "domain": "agentic_payments",
+      "nominal_success_artifact": "valid Checkout/Payment Mandates and signed Payment Receipt accepted by the relevant AP2 roles",
+      "intended_consequence": "the user received the intended commercial good/service under the intended terms",
+      "locked_oracle": "UNKNOWN_FROM_NOMINAL_ARTIFACT",
+      "reason": "AP2 secures authorization/payment evidence and explicitly leaves commerce-protocol details outside its scope; payment authorization/receipt is not merchant-fulfillment proof.",
+      "source": "https://ap2-protocol.org/ap2/specification/",
+      "expected_obligation_families": ["BINDING", "POSTCONDITION", "FINALITY_BOUNDARY"]
+    },
+    {
+      "id": "P2_X402_SETTLE_VS_RESOURCE_DELIVERY",
+      "domain": "agentic_payments",
+      "nominal_success_artifact": "successful x402 verification/settlement response",
+      "intended_consequence": "the paid resource/service was actually delivered and usable for the request",
+      "locked_oracle": "UNKNOWN_FROM_NOMINAL_ARTIFACT",
+      "reason": "x402 settlement establishes payment-side state from the resource-server perspective; settlement can represent different payment commitments and is separable from the resource postcondition.",
+      "source": "https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md",
+      "expected_obligation_families": ["BINDING", "EFFECT_EXISTENCE", "POSTCONDITION", "FINALITY_BOUNDARY"]
+    },
+    {
+      "id": "P3_STRIPE_REFUND_SUCCEEDED_VS_ECONOMIC_FINALITY",
+      "domain": "agentic_payments",
+      "nominal_success_artifact": "Stripe Refund state observed as succeeded",
+      "intended_consequence": "the intended refund is economically final and cannot subsequently reverse/fail",
+      "locked_oracle": "UNKNOWN_FROM_NOMINAL_ARTIFACT",
+      "reason": "Stripe documents asynchronous refund behavior including tests in which a succeeded refund later fails; provider success must not be upgraded to economic finality.",
+      "source": "https://docs.stripe.com/refunds",
+      "expected_obligation_families": ["BINDING", "STABILITY", "TEMPORAL_BOUND", "FINALITY_BOUNDARY"]
+    },
+    {
+      "id": "O1_KUBERNETES_DELETE_202_VS_OBJECT_ABSENT",
+      "domain": "cloud_operations",
+      "nominal_success_artifact": "HTTP 202 Accepted from Kubernetes DELETE on an object with finalizers",
+      "intended_consequence": "the object and required dependents are actually gone",
+      "locked_oracle": "UNKNOWN_FROM_NOMINAL_ARTIFACT",
+      "reason": "Kubernetes marks deletionTimestamp and returns 202 while finalizers can keep the object in Terminating until cleanup completes.",
+      "source": "https://kubernetes.io/docs/concepts/overview/working-with-objects/finalizers/",
+      "expected_obligation_families": ["POSTCONDITION", "COMPLETENESS", "STABILITY", "RECURRENCE_OR_RESIDUAL"]
+    },
+    {
+      "id": "O2_EC2_TERMINATE_RESPONSE_VS_TERMINATED",
+      "domain": "cloud_operations",
+      "nominal_success_artifact": "successful TerminateInstances response showing currentState=shutting-down",
+      "intended_consequence": "the target instance is terminally terminated and required attached resources have the intended disposition",
+      "locked_oracle": "UNKNOWN_FROM_NOMINAL_ARTIFACT",
+      "reason": "EC2 returns an intermediate shutting-down state; termination can take time or become stuck, and attached-volume disposition depends on configuration.",
+      "source": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_TerminateInstances.html",
+      "expected_obligation_families": ["BINDING", "POSTCONDITION", "COMPLETENESS", "STABILITY"]
+    },
+    {
+      "id": "W1_GITHUB_CANCEL_202_VS_EXECUTION_CEASED",
+      "domain": "workflow_execution",
+      "nominal_success_artifact": "HTTP 202 Accepted from cancel workflow run",
+      "intended_consequence": "all execution attributable to the run has ceased and cannot continue producing side effects",
+      "locked_oracle": "UNKNOWN_FROM_NOMINAL_ARTIFACT",
+      "reason": "GitHub documents a multi-step cancellation process; jobs/steps whose conditions remain true can continue, and forced termination occurs only after the cancellation timeout.",
+      "source": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation",
+      "expected_obligation_families": ["EFFECT_EXISTENCE", "COMPLETENESS", "STABILITY", "RECURRENCE_OR_RESIDUAL"]
+    },
+    {
+      "id": "I1_OAUTH_REVOCATION_200_VS_EFFECTIVE_REVOCATION",
+      "domain": "identity_revocation",
+      "nominal_success_artifact": "HTTP 200 from an RFC 7009 token revocation endpoint",
+      "intended_consequence": "the relevant authorization is no longer usable at every resource boundary that matters",
+      "locked_oracle": "UNKNOWN_FROM_NOMINAL_ARTIFACT",
+      "reason": "RFC 7009 uses 200 both for successful revocation and invalid tokens and acknowledges propagation delay; related-token revocation depends on server policy.",
+      "source": "https://www.rfc-editor.org/rfc/rfc7009.html",
+      "expected_obligation_families": ["BINDING", "COMPLETENESS", "STABILITY", "RECURRENCE_OR_RESIDUAL"]
+    },
+    {
+      "id": "I2_GCP_KEY_DELETE_VS_EXISTING_SHORT_LIVED_CREDENTIALS",
+      "domain": "identity_revocation",
+      "nominal_success_artifact": "successful deletion of a Google Cloud service-account key",
+      "intended_consequence": "credentials derived from that key can no longer authorize access",
+      "locked_oracle": "REFUTED_IF_PREEXISTING_SHORT_LIVED_CREDENTIAL_REMAINS_VALID_ELSE_UNKNOWN_WITHOUT_COVERAGE",
+      "reason": "Google Cloud documents that deleting a service-account key does not revoke short-lived credentials already issued from that key.",
+      "source": "https://docs.cloud.google.com/iam/docs/keys-create-delete",
+      "expected_obligation_families": ["COMPLETENESS", "RECURRENCE_OR_RESIDUAL", "TEMPORAL_BOUND"]
+    }
+  ],
+  "generic_obligation_family_allowlist": [
+    "BINDING",
+    "EFFECT_EXISTENCE",
+    "POSTCONDITION",
+    "COMPLETENESS",
+    "STABILITY",
+    "TEMPORAL_BOUND",
+    "FINALITY_BOUNDARY",
+    "RECURRENCE_OR_RESIDUAL"
+  ],
+  "primary_kill_rules": {
+    "false_decisive_claims_max": 0,
+    "min_cases_explainable_without_new_generic_family": 6,
+    "min_material_domains": 3,
+    "median_bespoke_semantic_rules_max": 2,
+    "max_bespoke_semantic_rules_any_domain": 4,
+    "min_executable_evidence_plans": 6
+  },
+  "notes": [
+    "This corpus is intentionally outside-in and sourced from independent public protocols/APIs rather than RISU-authored fixtures.",
+    "The success artifacts are not assumed wrong; the test is whether they prove the broader intended consequence.",
+    "No case may be deleted or relabeled after arm outputs are inspected."
+  ]
+}
