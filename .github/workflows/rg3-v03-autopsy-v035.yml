@@ -1,0 +1,67 @@
+name: RG3 v03 Static Autopsy v0.3.5
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/AUTOPSY_TRIGGER_V035
+
+permissions:
+  contents: read
+
+jobs:
+  static-autopsy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Reconstruct exact E0 capsule and v0.3.5 executor
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=execution/rg3-v03
+          WORK=/tmp/rg3-autopsy-v035
+          rm -rf "$WORK"; mkdir -p "$WORK/e0"
+          R="$BASE/e0_03_01_repair"; cat "$R"/{00,01,02,03,04,05,06,07,08,09}.txt > "$WORK/e0/03_01.txt"
+          printf '%s  %s\n' '716c05a7a40a6d58c81930057b53553899642fcc5f664de8155ebfd78425db02' "$WORK/e0/03_01.txt" | sha256sum -c -
+          cat "$BASE/e0/00_00.txt" "$BASE/e0/00_01.txt" "$BASE/e0/00_02.txt" "$BASE/e0/01_00.txt" "$BASE/e0/01_01.txt" "$BASE/e0/01_02.txt" "$BASE/e0/02_00.txt" "$BASE/e0/02_01.txt" "$BASE/e0/02_02.txt" "$BASE/e0/03_00.txt" "$WORK/e0/03_01.txt" "$BASE/e0/03_02.txt" "$BASE/e0/04_00.txt" "$BASE/e0/04_01.txt" > "$WORK/e0/e0.b64"
+          base64 --decode "$WORK/e0/e0.b64" > "$WORK/e0/e0.zip"
+          printf '%s  %s\n' 'df016b10ae72439a24d5611b6cacee42973d8d25f2a632b65e11eed6691d2495' "$WORK/e0/e0.zip" | sha256sum -c -
+          unzip -q "$WORK/e0/e0.zip" -d "$WORK/e0/root"
+          CAP="$WORK/e0/root/rg3_stripe_e0_capsule_v0_3"
+          (cd "$CAP" && sha256sum -c MANIFEST.sha256)
+          python "$BASE/patch_e0_v034.py" --script "$CAP/scripts/stripe_e0.py" --receipt "$WORK/PATCH_V034.json"
+          python "$BASE/patch_e0_v035.py" --script "$CAP/scripts/stripe_e0.py" --receipt "$WORK/PATCH_V035.json"
+          test "$(sha256sum "$CAP/scripts/stripe_e0.py" | awk '{print $1}')" = '241f4497d18708012be4da00cd6fbc97643e594371641fff1de2ac9ac7c92c8f'
+          cp "$CAP/scripts/stripe_e0.py" "$WORK/stripe_e0_v035.py"
+          echo 'AUTOPSY_EXECUTOR_RECONSTRUCTION=PASS; PROVIDER_CALLS=0; PRIMARY_EVIDENCE=0'
+      - name: AST and source-window autopsy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python execution/rg3-v03/autopsy_executor_v035.py /tmp/rg3-autopsy-v035/stripe_e0_v035.py /tmp/rg3-autopsy-v035/AUTOPSY_REPORT.json
+          python - <<'PY'
+          from pathlib import Path
+          import json, hashlib
+          r=Path('/tmp/rg3-autopsy-v035')
+          x=json.loads((r/'AUTOPSY_REPORT.json').read_text())
+          assert x['executor_sha256']=='241f4497d18708012be4da00cd6fbc97643e594371641fff1de2ac9ac7c92c8f'
+          assert x['provider_calls']==0 and x['provider_mutations']==0 and x['primary_evidence_consumed'] is False
+          manifest={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(r.iterdir()) if p.is_file() and p.name not in {'stripe_e0_v035.py','e0.b64','e0.zip'}}
+          (r/'AUTOPSY_MANIFEST.json').write_text(json.dumps(manifest,sort_keys=True,separators=(',',':')))
+          print('AUTOPSY_REPORT_SHA256='+hashlib.sha256((r/'AUTOPSY_REPORT.json').read_bytes()).hexdigest())
+          PY
+      - name: Upload forensic report only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-v035-static-autopsy
+          path: |
+            /tmp/rg3-autopsy-v035/AUTOPSY_REPORT.json
+            /tmp/rg3-autopsy-v035/AUTOPSY_MANIFEST.json
+            /tmp/rg3-autopsy-v035/PATCH_V034.json
+            /tmp/rg3-autopsy-v035/PATCH_V035.json
+          if-no-files-found: error
+          retention-days: 30
