@@ -1,7 +1,7 @@
 RG3_AUTOPSY_TRIGGER_V035
 triggered_on=2026-09-04
-attempt=4
-scope=PROVIDER_FREE_STATIC_AUTOPSY_PLUS_FROZEN_PROVIDER_STACK
+attempt=5
+scope=PROVIDER_FREE_STATIC_TIMING_AND_PROVIDER_STACK_AUTOPSY
 runtime_dependencies=LIVE_MATCHED
 provider_calls=0
 provider_mutations=0
