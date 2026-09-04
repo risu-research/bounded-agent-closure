@@ -1,0 +1,219 @@
+name: RG3 v03 Stripe live E0 v2
+
+on:
+  push:
+    branches: [rg3-stripe-e0-execution-v03]
+    paths:
+      - execution/rg3-v03/LIVE_E0_TRIGGER_V2
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rg3-v03-stripe-live-e0-v2
+  cancel-in-progress: false
+
+jobs:
+  stripe-live-e0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install exact RG3 runtime dependencies
+        run: python -m pip install --disable-pip-version-check 'pydantic==2.13.4' 'PyYAML==6.0.3' 'pytest==9.0.2'
+
+      - name: Reconstruct and verify frozen RG3 v0.4 plus exact E0 v0.3 base
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=execution/rg3-v03
+          mkdir -p /tmp/rg3-live/minimal /tmp/rg3-live/e0
+
+          cat "$base/minimal/00.b64" "$base/minimal/01.b64" \
+              "$base"/minimal02b/{00,01,02}.txt \
+              "$base"/minimal03/{00,01}.txt "$base/minimal03c/00.txt" \
+              "$base/minimal03d/00.txt" "$base"/minimal03e/{00,01}.txt \
+              "$base/minimal/04.b64" "$base/minimal/05.b64" \
+              "$base/minimal/06.b64" "$base/minimal/07.b64" \
+              "$base"/minimal08/{00,01}.txt > /tmp/rg3-live/minimal/minimal.b64
+          base64 --decode /tmp/rg3-live/minimal/minimal.b64 > /tmp/rg3-live/minimal/minimal.zip
+          printf '%s  %s\n' '3baffd98c72c4eb498eef77628e89ec884bd56e911670fca6e8d1e944019c73f' /tmp/rg3-live/minimal/minimal.zip | sha256sum -c -
+          unzip -q /tmp/rg3-live/minimal/minimal.zip -d /tmp/rg3-live/minimal/root
+          sealed=/tmp/rg3-live/minimal/root/rg3_v04_minimal
+          python "$sealed/scripts/verify_preprimary.py" "$sealed"
+
+          r="$base/e0_03_01_repair"
+          printf '%s  %s\n' '3d84c341160f4e08c9c9c35947554bc0896f821851d960188b6b5559b4f55417' "$r/00.txt" | sha256sum -c -
+          printf '%s  %s\n' '1e6cca9f8245a109f12f1067c16840b1b1b13badd37842e9bd11da37a68704bf' "$r/01.txt" | sha256sum -c -
+          printf '%s  %s\n' '7bcc6c9d9ea035a83c2d88f2137f451530c54b500709207a53a1e7c2c87b7fe9' "$r/02.txt" | sha256sum -c -
+          printf '%s  %s\n' 'bca9053edeea7ab90477da565313d5764728b3d14d42d285779f3b40cebdff51' "$r/03.txt" | sha256sum -c -
+          printf '%s  %s\n' '214f199a03a6223ff647858ec95b1a19bec36db86f426ae47398c2130e5f0da4' "$r/04.txt" | sha256sum -c -
+          printf '%s  %s\n' '4fbdfcdfd1010975630914077d52a05368f4981a777f19ab68d788c02dc94344' "$r/05.txt" | sha256sum -c -
+          printf '%s  %s\n' 'e899cb58e9333b05e213b3c18074c76851166beeb11dad0f45c48501777870af' "$r/06.txt" | sha256sum -c -
+          printf '%s  %s\n' '84c41eb600f705d09da18c0a54cfc9c89bb3c07312a665284276188254088f1c' "$r/07.txt" | sha256sum -c -
+          printf '%s  %s\n' '906ec0162a2b0c7273253e57d89cff4add663a15c4e30f9df0dbc26df679a375' "$r/08.txt" | sha256sum -c -
+          printf '%s  %s\n' '580abf54ee4aa5e418b6ce836330003eef23e1bc4c5892ecf9c877e4420bbc22' "$r/09.txt" | sha256sum -c -
+          cat "$r"/{00,01,02,03,04,05,06,07,08,09}.txt > /tmp/rg3-live/e0/03_01.txt
+          printf '%s  %s\n' '716c05a7a40a6d58c81930057b53553899642fcc5f664de8155ebfd78425db02' /tmp/rg3-live/e0/03_01.txt | sha256sum -c -
+
+          cat "$base/e0/00_00.txt" "$base/e0/00_01.txt" "$base/e0/00_02.txt" \
+              "$base/e0/01_00.txt" "$base/e0/01_01.txt" "$base/e0/01_02.txt" \
+              "$base/e0/02_00.txt" "$base/e0/02_01.txt" "$base/e0/02_02.txt" \
+              "$base/e0/03_00.txt" /tmp/rg3-live/e0/03_01.txt "$base/e0/03_02.txt" \
+              "$base/e0/04_00.txt" "$base/e0/04_01.txt" > /tmp/rg3-live/e0/e0.b64
+          base64 --decode /tmp/rg3-live/e0/e0.b64 > /tmp/rg3-live/e0/e0.zip
+          printf '%s  %s\n' 'df016b10ae72439a24d5611b6cacee42973d8d25f2a632b65e11eed6691d2495' /tmp/rg3-live/e0/e0.zip | sha256sum -c -
+          unzip -q /tmp/rg3-live/e0/e0.zip -d /tmp/rg3-live/e0/root
+          cap=/tmp/rg3-live/e0/root/rg3_stripe_e0_capsule_v0_3
+          (cd "$cap" && sha256sum -c MANIFEST.sha256)
+
+      - name: Apply and qualify E0 v0.3.1 claimable-sandbox compatibility delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          cap=/tmp/rg3-live/e0/root/rg3_stripe_e0_capsule_v0_3
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          p=Path('/tmp/rg3-live/e0/root/rg3_stripe_e0_capsule_v0_3/scripts/stripe_e0.py')
+          s=p.read_text()
+          old='''    if not key.startswith(("sk_test_","rk_test_")):\n        raise SystemExit("REFUSED: unrecognized Stripe secret-key prefix; expected sk_test_ or rk_test_")\n    return key\n'''
+          new='''    if key.startswith("rkcs_"):\n        if os.environ.get("RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED") != "1":\n            raise SystemExit("REFUSED: rkcs_ key requires verified Stripe CLI claimable-sandbox provenance")\n        return key\n    if not key.startswith(("sk_test_","rk_test_")):\n        raise SystemExit("REFUSED: unrecognized Stripe secret-key prefix; expected sk_test_, rk_test_, or provenance-verified rkcs_")\n    return key\n'''
+          if s.count(old)!=1: raise SystemExit('compatibility patch preimage mismatch')
+          p.write_text(s.replace(old,new))
+          got=hashlib.sha256(p.read_bytes()).hexdigest()
+          if got!='b1ecf0ed7ca6d9fd2d025f16e1b119cfb1d57737334d3642b1add23b2fc306b5': raise SystemExit(f'patched script SHA mismatch: {got}')
+          print('E0_V031_PATCH_SHA=PASS')
+          PY
+          (cd "$cap" && pytest -q tests/test_capsule.py)
+          python - <<'PY'
+          import os, importlib.util, pathlib
+          p=pathlib.Path('/tmp/rg3-live/e0/root/rg3_stripe_e0_capsule_v0_3/scripts/stripe_e0.py')
+          spec=importlib.util.spec_from_file_location('e0',p); e0=importlib.util.module_from_spec(spec); spec.loader.exec_module(e0)
+          os.environ['STRIPE_SECRET_KEY']='rkcs_dummy'; os.environ['RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED']='1'; assert e0.require_test_key()=='rkcs_dummy'
+          os.environ.pop('RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED',None)
+          try: e0.require_test_key(); raise AssertionError('rkcs accepted without provenance')
+          except SystemExit: pass
+          os.environ['STRIPE_SECRET_KEY']='sk_live_dummy'; os.environ['RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED']='1'
+          try: e0.require_test_key(); raise AssertionError('live key accepted')
+          except SystemExit: pass
+          print('E0_CLAIMABLE_SANDBOX_DELTA_TESTS=3/3 PASS')
+          PY
+          sealed=/tmp/rg3-live/minimal/root/rg3_v04_minimal
+          env -u STRIPE_SECRET_KEY -u RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED python "$cap/scripts/stripe_e0.py" preflight --sealed-root "$sealed" --out /tmp/rg3-live/pre-provider-preflight
+          echo 'PRE_PROVIDER_LIVE_GATE=PASS; PROVIDER_MUTATIONS=0; PRIMARY_EVIDENCE=0'
+
+      - name: Install checksum-verified Stripe CLI v1.50.10
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSLo /tmp/stripe-cli.deb 'https://github.com/stripe/stripe-cli/releases/download/v1.50.10/stripe_1.50.10_linux_amd64.deb'
+          printf '%s  %s\n' 'ad3e9c89a6c464a88a7b2808f5430c8a04908196be233e870d973fd4c67ec474' /tmp/stripe-cli.deb | sha256sum -c -
+          mkdir -p /tmp/stripe-cli-root
+          dpkg-deb -x /tmp/stripe-cli.deb /tmp/stripe-cli-root
+          STRIPE_BIN="$(find /tmp/stripe-cli-root -type f -name stripe -perm -111 | head -n 1)"
+          test -n "$STRIPE_BIN"
+          "$STRIPE_BIN" version | grep -F '1.50.10'
+          echo "STRIPE_BIN=$STRIPE_BIN" >> "$GITHUB_ENV"
+          echo 'STRIPE_CLI_SUPPLY_CHAIN_GATE=PASS'
+
+      - name: Provision fresh disposable Stripe sandbox and prove credential containment
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HOME=/tmp/rg3-stripe-home
+          export XDG_CONFIG_HOME=/tmp/rg3-stripe-xdg
+          mkdir -p "$HOME" "$XDG_CONFIG_HOME" /tmp/rg3-public
+          email="$(git log -1 --format=%ae)"
+          case "$email" in *@*) ;; *) echo 'Commit-author email unavailable; refusing sandbox provisioning'; exit 1;; esac
+          raw=/tmp/stripe-sandbox-create.private
+          err=/tmp/stripe-sandbox-create.stderr.private
+          if ! "$STRIPE_BIN" sandbox create --email "$email" --non-interactive >"$raw" 2>"$err"; then echo 'STRIPE_SANDBOX_PROVISION=FAIL (private provider output suppressed)'; exit 1; fi
+          python - <<'PY'
+          from pathlib import Path
+          import json, os
+          text=Path('/tmp/stripe-sandbox-create.private').read_text(); i=text.find('{')
+          if i<0: raise SystemExit('sandbox create produced no JSON result')
+          obj,_=json.JSONDecoder().raw_decode(text[i:]); secret=obj.get('secret_key') or ''
+          if not secret: raise SystemExit('sandbox create produced no secret key')
+          prefix='rkcs_' if secret.startswith('rkcs_') else ('rk_test_' if secret.startswith('rk_test_') else ('sk_test_' if secret.startswith('sk_test_') else 'OTHER'))
+          if prefix=='OTHER': raise SystemExit('sandbox create returned an unrecognized key class')
+          for name,val in [('secret',secret),('publishable',obj.get('publishable_key') or ''),('claim_url',obj.get('claim_url') or '')]:
+              p=Path('/tmp/stripe-'+name+'.private'); p.write_text(val); os.chmod(p,0o600)
+          Path('/tmp/stripe-prefix-class').write_text(prefix)
+          receipt={'phase':'STRIPE_SANDBOX_PROVISION','stripe_cli_version':'1.50.10','stripe_cli_deb_sha256':'ad3e9c89a6c464a88a7b2808f5430c8a04908196be233e870d973fd4c67ec474','credential_class':prefix,'claimable_expiry_present':bool(obj.get('expires_at')),'primary_evidence_consumed':False}
+          Path('/tmp/rg3-public/SANDBOX_PROVISION_RECEIPT.json').write_text(json.dumps(receipt,sort_keys=True,separators=(',',':')))
+          PY
+          secret="$(cat /tmp/stripe-secret.private)"; pub="$(cat /tmp/stripe-publishable.private)"; claim="$(cat /tmp/stripe-claim_url.private)"
+          echo "::add-mask::$secret"; if [ -n "$pub" ]; then echo "::add-mask::$pub"; fi; if [ -n "$claim" ]; then echo "::add-mask::$claim"; fi
+          export STRIPE_SECRET_KEY="$secret"; prefix="$(cat /tmp/stripe-prefix-class)"
+          "$STRIPE_BIN" whoami --format json > /tmp/stripe-whoami.public.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          w=json.loads(Path('/tmp/stripe-whoami.public.json').read_text())
+          assert w['authenticated'] is True and w['test_mode_key']['available'] is True and w['live_mode_key']['available'] is False
+          r=json.loads(Path('/tmp/rg3-public/SANDBOX_PROVISION_RECEIPT.json').read_text()); r.update({'whoami_authenticated':True,'whoami_test_mode_key_available':True,'whoami_live_mode_key_available':False,'whoami_network_calls':False})
+          Path('/tmp/rg3-public/SANDBOX_PROVISION_RECEIPT.json').write_text(json.dumps(r,sort_keys=True,separators=(',',':')))
+          PY
+          if [ "$prefix" = 'rkcs_' ]; then export RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED=1; fi
+          printf 'STRIPE_SECRET_KEY=%s\n' "$secret" >> "$GITHUB_ENV"
+          if [ "${RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED:-0}" = '1' ]; then echo 'RG3_STRIPE_CLAIMABLE_SANDBOX_VERIFIED=1' >> "$GITHUB_ENV"; fi
+          echo 'HOME=/tmp/rg3-stripe-home' >> "$GITHUB_ENV"
+          echo 'XDG_CONFIG_HOME=/tmp/rg3-stripe-xdg' >> "$GITHUB_ENV"
+          rm -f "$raw" "$err" /tmp/stripe-secret.private /tmp/stripe-publishable.private /tmp/stripe-claim_url.private
+          echo "FIRST_PROVIDER_INTERACTION=PASS; CREDENTIAL_CLASS=$prefix; LIVE_KEY_AVAILABLE=FALSE"
+
+      - name: Live credential preflight then clean smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          cap=/tmp/rg3-live/e0/root/rg3_stripe_e0_capsule_v0_3
+          sealed=/tmp/rg3-live/minimal/root/rg3_v04_minimal
+          mkdir -p /tmp/rg3-public/preflight /tmp/rg3-public/smoke
+          python "$cap/scripts/stripe_e0.py" preflight --sealed-root "$sealed" --out /tmp/rg3-public/preflight
+          python "$cap/scripts/stripe_e0.py" live-smoke --sealed-root "$sealed" --out /tmp/rg3-public/smoke
+          echo 'STRIPE_LIVE_E0_SMOKE=PASS; PRIMARY_EVIDENCE=0'
+
+      - name: Full adversarial Stripe E0 and calibration
+        shell: bash
+        run: |
+          set -euo pipefail
+          cap=/tmp/rg3-live/e0/root/rg3_stripe_e0_capsule_v0_3
+          sealed=/tmp/rg3-live/minimal/root/rg3_v04_minimal
+          mkdir -p /tmp/rg3-public/full /tmp/rg3-private-oracle
+          chmod 700 /tmp/rg3-private-oracle
+          python "$cap/scripts/stripe_e0.py" live-full --sealed-root "$sealed" --out /tmp/rg3-public/full --oracle-vault /tmp/rg3-private-oracle
+          echo 'STRIPE_LIVE_E0_FULL=PASS; PRIMARY_EVIDENCE=0'
+
+      - name: Seal secret-free public E0 evidence index
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os
+          root=Path('/tmp/rg3-public'); secret=os.environ['STRIPE_SECRET_KEY'].encode(); files={}
+          for p in sorted(root.rglob('*')):
+              if not p.is_file(): continue
+              raw=p.read_bytes()
+              if secret in raw: raise SystemExit(f'secret leaked into public artifact: {p}')
+              files[str(p.relative_to(root))]=hashlib.sha256(raw).hexdigest()
+          index={'phase':'STRIPE_E0_PUBLIC_SEAL','files':files,'primary_evidence_consumed':False,'private_oracle_uploaded':False}
+          out=root/'PUBLIC_E0_INDEX.json'; out.write_text(json.dumps(index,sort_keys=True,separators=(',',':')))
+          print('PUBLIC_E0_FILES='+str(len(files)); print('PUBLIC_E0_INDEX_SHA256='+hashlib.sha256(out.read_bytes()).hexdigest())
+          PY
+          rm -rf /tmp/rg3-private-oracle /tmp/rg3-stripe-home /tmp/rg3-stripe-xdg
+          echo 'PRIVATE_ORACLE_DESTROYED_BEFORE_UPLOAD=TRUE'
+
+      - name: Upload public E0 evidence only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: rg3-stripe-e0-v031-public-evidence
+          path: /tmp/rg3-public
+          if-no-files-found: error
+          retention-days: 30
