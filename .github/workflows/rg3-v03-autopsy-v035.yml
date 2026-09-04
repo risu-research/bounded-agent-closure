@@ -33,7 +33,8 @@ jobs:
           unzip -q "$WORK/e0/e0.zip" -d "$WORK/e0/root"
           CAP="$WORK/e0/root/rg3_stripe_e0_capsule_v0_3"
           (cd "$CAP" && sha256sum -c MANIFEST.sha256)
-          python "$BASE/patch_e0_v034.py" --script "$CAP/scripts/stripe_e0.py" --receipt "$WORK/PATCH_V034.json"
+          # patch_e0_v035.py deliberately applies the v0.3.4 base patch internally.
+          # Calling patch_e0_v034.py separately here would double-apply the base patch.
           python "$BASE/patch_e0_v035.py" --script "$CAP/scripts/stripe_e0.py" --receipt "$WORK/PATCH_V035.json"
           test "$(sha256sum "$CAP/scripts/stripe_e0.py" | awk '{print $1}')" = '241f4497d18708012be4da00cd6fbc97643e594371641fff1de2ac9ac7c92c8f'
           cp "$CAP/scripts/stripe_e0.py" "$WORK/stripe_e0_v035.py"
@@ -61,7 +62,6 @@ jobs:
           path: |
             /tmp/rg3-autopsy-v035/AUTOPSY_REPORT.json
             /tmp/rg3-autopsy-v035/AUTOPSY_MANIFEST.json
-            /tmp/rg3-autopsy-v035/PATCH_V034.json
             /tmp/rg3-autopsy-v035/PATCH_V035.json
           if-no-files-found: error
           retention-days: 30
