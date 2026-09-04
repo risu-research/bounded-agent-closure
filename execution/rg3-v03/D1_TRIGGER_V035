@@ -1,0 +1,8 @@
+RG3_D1_TRIGGER_V035
+triggered_on=2026-09-04
+precommit=AUTOPSY_HYPOTHESES_V035.json
+scope=FRESH_CLAIMABLE_SANDBOX_ASYNC_INITIAL_CAPABILITY_ONLY
+provider_calls_budget=7
+terminal_polling_seconds=0
+primary_evidence_consumed=false
+automatic_live_e0_rerun=false
