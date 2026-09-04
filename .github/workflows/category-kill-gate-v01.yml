@@ -22,6 +22,30 @@ jobs:
           python-version: '3.13'
       - name: Fail-closed gate validation
         run: python execution/category-kill-gate-v01/validate_gate.py
+      - name: Generate blind arm package and separate reveal map
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=execution/category-kill-gate-v01
+          BLIND=/tmp/category-kill-gate-v01-blind
+          REVEAL=/tmp/category-kill-gate-v01-reveal
+          mkdir -p "$BLIND" "$REVEAL"
+          python "$ROOT/make_blind_arm_package.py" \
+            "$ROOT/CORPUS_V0_1.json" \
+            "$BLIND/ARM_INPUT_V0_1.json" \
+            "$REVEAL/REVEAL_MAP_V0_1.json"
+          test ! -e "$BLIND/REVEAL_MAP_V0_1.json"
+          test ! -e "$REVEAL/ARM_INPUT_V0_1.json"
+          python - "$BLIND/ARM_INPUT_V0_1.json" <<'PY'
+          from pathlib import Path
+          import json,sys
+          x=json.loads(Path(sys.argv[1]).read_text())
+          assert len(x['cases'])==8
+          forbidden=('locked_oracle','reason','expected_obligation_families','domain','original_case_id')
+          raw=Path(sys.argv[1]).read_text()
+          assert all(k not in raw for k in forbidden)
+          assert x['instructions']['project_x_terms_provided'] is False
+          PY
       - name: Seal preprimary gate artifacts
         shell: bash
         run: |
@@ -35,16 +59,21 @@ jobs:
             "$ROOT/CORPUS_V0_1.json" \
             "$ROOT/SOURCE_AUDIT_V0_1.md" \
             "$ROOT/CLAIM_SURFACE_MATRIX_V0_1.csv" \
-            "$ROOT/validate_gate.py" > "$OUT/MANIFEST.sha256"
-          python - "$OUT/SEAL.json" "$GITHUB_SHA" <<'PY'
+            "$ROOT/validate_gate.py" \
+            "$ROOT/make_blind_arm_package.py" > "$OUT/MANIFEST.sha256"
+          python - "$OUT/SEAL.json" "$GITHUB_SHA" /tmp/category-kill-gate-v01-blind/ARM_INPUT_V0_1.json /tmp/category-kill-gate-v01-reveal/REVEAL_MAP_V0_1.json <<'PY'
           from pathlib import Path
           import hashlib,json,sys
           manifest=Path('/tmp/category-kill-gate-v01/MANIFEST.sha256').read_bytes()
+          arm=Path(sys.argv[3]).read_bytes(); reveal=Path(sys.argv[4]).read_bytes()
           Path(sys.argv[1]).write_text(json.dumps({
             'gate':'CONSEQUENCE_CATEGORY_KILL_GATE_V0_1',
             'status':'SEALED_PREPRIMARY_PENDING_ARM_EXECUTION',
             'commit':sys.argv[2],
             'manifest_sha256':hashlib.sha256(manifest).hexdigest(),
+            'blind_arm_input_sha256':hashlib.sha256(arm).hexdigest(),
+            'hidden_reveal_map_sha256':hashlib.sha256(reveal).hexdigest(),
+            'blind_and_reveal_artifacts_separated':True,
             'source_audit_cases_qualified':8,
             'claim_surface_rows':8,
             'provider_calls':0,
@@ -60,5 +89,19 @@ jobs:
         with:
           name: consequence-category-kill-gate-v01-preprimary
           path: /tmp/category-kill-gate-v01
+          if-no-files-found: error
+          retention-days: 90
+      - name: Upload blind arm input only
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: consequence-category-kill-gate-v01-arm-input
+          path: /tmp/category-kill-gate-v01-blind/ARM_INPUT_V0_1.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Upload hidden reveal map separately
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: consequence-category-kill-gate-v01-reveal-map
+          path: /tmp/category-kill-gate-v01-reveal/REVEAL_MAP_V0_1.json
           if-no-files-found: error
           retention-days: 90
