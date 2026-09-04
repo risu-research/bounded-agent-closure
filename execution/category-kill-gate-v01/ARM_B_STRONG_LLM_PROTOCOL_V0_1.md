@@ -36,6 +36,8 @@ For each case:
 
 The prompt must not mention any Project X family names or scoring rules.
 
+**The prompt must not define or name Project X obligation families.**
+
 ## Required JSON output per case
 
 ```json
