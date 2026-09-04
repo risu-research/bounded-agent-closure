@@ -1,0 +1,25 @@
+{
+  "provenance_id": "NATIVE_PLUS_V0_2_1_VOCABULARY_BINDING",
+  "source_commit": "455184caf716751148b7c9c2a372b66084dcaa30",
+  "source_archive_sha256": "a65d2e79590f99cff0efa83de283075f54c69135d00487caa5d1c305ee0aaa8b",
+  "source_files": {
+    "projectx_compression/plan.py": "5847f74a1d9c9a00fc207b73581a4478b58863c4bd477c568b6dd5fb3ddc0f5d",
+    "projectx_legacy/compiler.py": "967025734a8e71c9384e625253b280f67bfe6f37792ba3dff7049ff90b9ba69e",
+    "projectx_compression/models.py": "ef53aa19c0a5579f5a82dff40dc8db451c648140b6e0629897d70e02dec329a1"
+  },
+  "acquisition_ops": ["ENUMERATE", "OBSERVE", "WATCH", "SNAPSHOT"],
+  "proof_ops": ["CERTIFY_COMPLETE", "CERTIFY_TEMPORAL_CLOSURE"],
+  "completeness_procedures": ["SINGLE_COLLECTION", "STABLE_RESCAN", "EXHAUSTIVE_MEMBER_PROBE"],
+  "coherence_models": ["SINGLE_COLLECTION", "STABLE_RESCAN", "BOUNDED_PROBE_EPOCH", "PROVIDER_CURSOR", "HISTORICAL_REPLAY"],
+  "evidence_atom_kinds": [
+    "RELATION_MEMBER",
+    "FIELD_VALUE",
+    "BINARY_RELATION",
+    "EVENT",
+    "SNAPSHOT",
+    "TEMPORAL_ORIGIN",
+    "ACQUISITION_FACT",
+    "DERIVED_VALUE"
+  ],
+  "rule": "The Zero-Shot Consequence Compiler Crucible may bind these frozen generic concepts to new source interfaces but may not add or broaden a generic operation and count the same trial as a pass."
+}
